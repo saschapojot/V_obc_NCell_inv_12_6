@@ -10,7 +10,7 @@ def format_using_decimal(value):
     formatted_value = decimal_value.quantize(Decimal(1)) if decimal_value == decimal_value.to_integral() else decimal_value.normalize()
     return str(formatted_value)
 
-T=0.5
+T=4
 unitCellNum=2
 
 TStr=format_using_decimal(T)

@@ -166,7 +166,7 @@ public:
 
         }//end while
 
-        std::cout<<"LInit="<<LInit<<std::endl;
+//        std::cout<<"LInit="<<LInit<<std::endl;
         std::cout<<"xAVecInit: \n";
         print_shared_ptr(xAVecInit,N);
         std::cout<<"xBVecInit: \n";
@@ -302,7 +302,7 @@ public:
     std::string U_dist_dataDir;
     std::shared_ptr<double[]> U_dist_ptr;
     int varNum;
-    double LInit;
+//    double LInit;
     std::shared_ptr<double[]> xAVecInit;
     std::shared_ptr<double[]> xBVecInit;
 
