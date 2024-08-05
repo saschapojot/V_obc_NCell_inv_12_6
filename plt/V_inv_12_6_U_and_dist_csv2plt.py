@@ -122,7 +122,7 @@ def pltU_dist(oneTFile):
     nRow,nCol=distArray.shape
     xA_array=distArray[:,:unitCellNum]
     xB_array=distArray[:,unitCellNum:]
-    LVec=xB_array[:,-1]-xA_array[:,-1]
+    LVec=xB_array[:,-1]-xA_array[:,0]
     LLength=len(LVec)
     LMean=np.mean(LVec)
     LVar=np.var(LVec,ddof=1)
