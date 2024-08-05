@@ -207,8 +207,10 @@ double mc_computation::zVal(const double& x,const double &a, const double &b){
     auto integrandWithParam=[x,a,b, this](const double &y){
         return this->integrand(y,x,a,b);
     };
-    double result = boost::math::quadrature::trapezoidal(integrandWithParam,a,b);
-
+    double tolerance = 1e-20;
+    boost::math::quadrature::gauss_kronrod<double, 80> integrator;
+//    double result = boost::math::quadrature::trapezoidal(integrandWithParam,a,b, tolerance);
+    double result = integrator.integrate(integrandWithParam,a,b,tolerance);
     return result;
 
 }
@@ -266,13 +268,13 @@ double mc_computation::acceptanceRatio(const std::shared_ptr<double[]>& xAVecCur
         double &UNext){
 
     double lm=potFuncPtr->getLm();
-
+    std::cout<<std::setprecision(std::numeric_limits<double>::digits10 + 1) << std::fixed;
     UNext=(*potFuncPtr)(xAVecNext.get(),xBVecNext.get());
-
+    std::cout<<"UNext="<<UNext<<std::endl;
     double numerator = -this->beta*UNext;
     double denominator=-this->beta*UCurr;
     double R=std::exp(numerator - denominator);
-
+    std::cout<<"R="<<R<<std::endl;
 
 
 
@@ -280,11 +282,17 @@ double mc_computation::acceptanceRatio(const std::shared_ptr<double[]>& xAVecCur
 
     for(int i=0;i<N;i++){
     double zxAOneCurrVal= zVal(xAVecCurr[i],0,lm);
+//    std::cout<<"xAVecCurr[i]="<<xAVecCurr[i]<<std::endl;
+//    std::cout<<"zxAOneCurrVal="<<zxAOneCurrVal<<std::endl;
     double zxAOneNextVal= zVal(xAVecNext[i],0,lm);
+//    std::cout<<"xAVecNext[i]="<<xAVecNext[i]<<std::endl;
+//    std::cout<<"zxAOneNextVal="<<zxAOneNextVal<<std::endl;
     double ratio_xAOneVal=zxAOneCurrVal/zxAOneNextVal;
+//    std::cout<<"ratio_xAOneVal="<<ratio_xAOneVal<<std::endl;
     R*=ratio_xAOneVal;
 
     }
+    std::cout<<"R="<<R<<std::endl;
 
     for(int i=0;i<N;i++){
         double zxBOneCurrVal= zVal(xBVecCurr[i],0,lm);

@@ -205,7 +205,7 @@ def checkU_distDataFilesForOneT(U_dist_csv_dir):
             fptr.writelines(msg)
             exit(sameErrCode)
 
-    pThreshHold=0.1
+    pThreshHold=0.05
     #if one lag==-1, then the auto-correlation is too large
 
     if np.min(dist_lags)>0:

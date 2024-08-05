@@ -6,8 +6,8 @@
 #define V_INV_12_6_MC_READ_LOAD_COMPUTE_HPP
 #include "../potentialFunction/potentialFunctionPrototype.hpp"
 #include <boost/filesystem.hpp>
-
-#include <boost/math/quadrature/trapezoidal.hpp>
+#include <boost/math/quadrature/gauss_kronrod.hpp>
+//#include <boost/math/quadrature/trapezoidal.hpp>
 #include <chrono>
 #include <cstdlib>
 #include <cxxabi.h>
@@ -57,7 +57,7 @@ public:
                 std::cout << "T=" << T << std::endl;
                 this->beta = 1 / T;
 //                double stepForT1 = 0.1;
-                double h_threshhold=0.01;
+                double h_threshhold=0.004;
                 this->h=h_threshhold;
 //                this->h = stepForT1 * T > h_threshhold ? h_threshhold : stepForT1 * T;//stepSize;
                 std::cout << "h=" << h << std::endl;
@@ -167,6 +167,7 @@ public:
         }//end while
 
 //        std::cout<<"LInit="<<LInit<<std::endl;
+        std::cout<<"unit cell number="<<N<<std::endl;
         std::cout<<"xAVecInit: \n";
         print_shared_ptr(xAVecInit,N);
         std::cout<<"xBVecInit: \n";
