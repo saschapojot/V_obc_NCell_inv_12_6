@@ -17,7 +17,7 @@ if (len(sys.argv)!=2):
 rowNum=int(sys.argv[1])
 unitCellNum=2
 
-csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
+csvDataFolderRoot="../bkp1.dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
 
 inCsvFile="../V2Params.csv"
 
@@ -292,8 +292,8 @@ for j in range(0,len(sortedTVals)):
 alphaValsAll=np.array(alphaValsAll)
 
 #plot alpha
-print(TToPlt)
-print(alphaValsAll[TInds])
+# print(TToPlt)
+# print(alphaValsAll[TInds])
 plt.figure()
 plt.scatter(TToPlt,alphaValsAll[TInds],color="violet",label="mc")
 # varVVals=[varV(T) for T in interpolatedTVals]

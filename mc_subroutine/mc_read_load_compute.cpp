@@ -43,10 +43,13 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& xAVec, const st
 //            double y1Next;
 //            double LReset;
 
-            this->proposal(xAVecCurr,xBVecCurr,xAVecNext,xBVecNext);
+//            this->proposal(xAVecCurr,xBVecCurr,xAVecNext,xBVecNext);
+            this->proposal_unit(xAVecCurr,xBVecCurr,xAVecNext,xBVecNext);
             double UNext;
             UCurr=(*potFuncPtr)(xAVecCurr.get(),xBVecCurr.get());
-            double r= acceptanceRatio(xAVecCurr,xBVecCurr,UCurr,
+//            double r= acceptanceRatio(xAVecCurr,xBVecCurr,UCurr,
+//                                      xAVecNext,xBVecNext,UNext);
+            double r=this->acceptanceRatio_uni(xAVecCurr,xBVecCurr,UCurr,
                                       xAVecNext,xBVecNext,UNext);
             double u = distUnif01(e2);
             if (u <= r) {
@@ -268,13 +271,13 @@ double mc_computation::acceptanceRatio(const std::shared_ptr<double[]>& xAVecCur
         double &UNext){
 
     double lm=potFuncPtr->getLm();
-    std::cout<<std::setprecision(std::numeric_limits<double>::digits10 + 1) << std::fixed;
+//    std::cout<<std::setprecision(std::numeric_limits<double>::digits10 + 1) << std::fixed;
     UNext=(*potFuncPtr)(xAVecNext.get(),xBVecNext.get());
-    std::cout<<"UNext="<<UNext<<std::endl;
+//    std::cout<<"UNext="<<UNext<<std::endl;
     double numerator = -this->beta*UNext;
     double denominator=-this->beta*UCurr;
     double R=std::exp(numerator - denominator);
-    std::cout<<"R="<<R<<std::endl;
+//    std::cout<<"R="<<R<<std::endl;
 
 
 
@@ -292,7 +295,7 @@ double mc_computation::acceptanceRatio(const std::shared_ptr<double[]>& xAVecCur
     R*=ratio_xAOneVal;
 
     }
-    std::cout<<"R="<<R<<std::endl;
+//    std::cout<<"R="<<R<<std::endl;
 
     for(int i=0;i<N;i++){
         double zxBOneCurrVal= zVal(xBVecCurr[i],0,lm);
@@ -303,6 +306,157 @@ double mc_computation::acceptanceRatio(const std::shared_ptr<double[]>& xAVecCur
 
     return std::min(1.0,R);
 
+
+
+}
+
+
+///
+/// @param x
+/// @param leftEnd
+/// @param rightEnd
+/// @param eps
+/// @return return a value within distance eps from x, on the open interval (leftEnd, rightEnd)
+double mc_computation::generate_uni_open_interval(const double &x, const double &leftEnd, const double &rightEnd, const double &eps){
+
+
+double xMinusEps=x-eps;
+double xPlusEps=x+eps;
+
+double unif_left_end=xMinusEps<leftEnd?leftEnd:xMinusEps;
+double unif_right_end=xPlusEps>rightEnd?rightEnd:xPlusEps;
+//    std::cout << std::setprecision(std::numeric_limits<double>::max_digits10);
+//std::cout<<"x="<<x<<std::endl;
+//std::cout<<"unif_left_end="<<unif_left_end<<std::endl;
+//std::cout<<"unif_right_end="<<unif_right_end<<std::endl;
+    std::random_device rd;
+    std::ranlux24_base e2(rd());
+// in std::uniform_real_distribution<> distUnif(a,b), the random numbers are from interval [a, b)
+//we need random numbers from interval (a,b)
+double unif_left_end_double_on_the_right=std::nextafter(unif_left_end, std::numeric_limits<double>::infinity());
+//    std::cout<<"unif_left_end_double_on_the_right="<<unif_left_end_double_on_the_right<<std::endl;
+
+
+
+    std::uniform_real_distribution<> distUnif(unif_left_end_double_on_the_right,unif_right_end); //[unif_left_end_double_on_the_right, unif_right_end)
+
+    double xNext=distUnif(e2);
+    return xNext;
+
+
+
+}
+
+
+
+///
+/// @param x proposed value
+/// @param y current value
+/// @param a left end of interval
+/// @param b right end of interval
+/// @param epsilon half length
+/// @return proposal probability S(x|y)
+double mc_computation::S_uni(const double &x, const double &y,const double &a, const double &b, const double &epsilon){
+
+    if (a<y and y<a+epsilon){
+        return 1.0/(y-a+epsilon);
+    } else if( a+epsilon<=y and y<b+epsilon){
+        return 1.0/(2.0*epsilon);
+    }else if(b-epsilon<=y and y<b){
+        return 1/(b-y+epsilon);
+    } else{
+
+        std::cerr<<"value out of range."<<std::endl;
+        std::exit(10);
+
+
+    }
+
+
+}
+
+///
+/// @param xAVecCurr
+/// @param xBVecCurr
+/// @param xAVecNext
+/// @param xBVecNext
+void mc_computation::proposal_unit(const std::shared_ptr<double[]>& xAVecCurr ,const std::shared_ptr<double[]>&xBVecCurr,
+                   std::shared_ptr<double[]>& xAVecNext, std::shared_ptr<double[]>& xBVecNext){
+
+
+
+
+
+    double lm=potFuncPtr->getLm();
+
+    for(int i=0;i<N;i++){
+
+        xAVecNext[i]= generate_uni_open_interval(xAVecCurr[i],0,lm,h);
+    }
+
+    for(int i=0;i<N;i++){
+        xBVecNext[i]=generate_uni_open_interval(xBVecCurr[i],0,lm,h);
+    }
+
+}
+
+
+
+///
+/// @param xAVecCurr
+/// @param xBVecCurr
+/// @param UCurr
+/// @param xAVecNext
+/// @param xBVecNext
+/// @param UNext
+/// @return
+double mc_computation::acceptanceRatio_uni(const std::shared_ptr<double[]>& xAVecCurr ,const std::shared_ptr<double[]>&xBVecCurr
+        ,const double& UCurr,
+                           const std::shared_ptr<double[]>& xAVecNext,
+                           const std::shared_ptr<double[]>&  xBVecNext,
+                           double &UNext){
+
+
+    double lm=potFuncPtr->getLm();
+    UNext=(*potFuncPtr)(xAVecNext.get(),xBVecNext.get());
+    double numerator = -this->beta*UNext;
+    double denominator=-this->beta*UCurr;
+    double R=std::exp(numerator - denominator);
+
+    for(int i=0;i<N;i++){
+    double S_xACurrNext= S_uni(xAVecCurr[i],xAVecNext[i],0,lm,h);
+    double S_xANextCurr= S_uni(xAVecNext[i],xAVecCurr[i],0,lm,h);
+    double ratio_xAi=S_xACurrNext/S_xANextCurr;
+        if (std::fetestexcept(FE_DIVBYZERO)) {
+            std::cout << "Division by zero exception caught." << std::endl;
+            std::exit(15);
+        }
+
+        if (std::isnan(ratio_xAi)) {
+            std::cout << "The result is NaN." << std::endl;
+            std::exit(15);
+        }
+    R*=ratio_xAi;
+
+    }
+
+    for(int i=0;i<N;i++){
+        double S_xBCurrNext= S_uni(xBVecCurr[i],xBVecNext[i],0,lm,h);
+        double S_xBNextCurr= S_uni(xBVecNext[i],xBVecCurr[i],0,lm,h);
+        double ratio_xBi=S_xBCurrNext/S_xBNextCurr;
+        if (std::fetestexcept(FE_DIVBYZERO)) {
+            std::cout << "Division by zero exception caught." << std::endl;
+            std::exit(15);
+        }
+
+        if (std::isnan(ratio_xBi)) {
+            std::cout << "The result is NaN." << std::endl;
+            std::exit(15);
+        }
+        R*=ratio_xBi;
+
+    }
+    return std::min(1.0,R);
 
 
 }
