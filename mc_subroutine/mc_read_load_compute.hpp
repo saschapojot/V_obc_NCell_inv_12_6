@@ -8,6 +8,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
 //#include <boost/math/quadrature/trapezoidal.hpp>
+#include <cfenv> // for floating-point exceptions
 #include <chrono>
 #include <cstdlib>
 #include <cxxabi.h>
@@ -57,7 +58,9 @@ public:
                 std::cout << "T=" << T << std::endl;
                 this->beta = 1 / T;
 //                double stepForT1 = 0.1;
-                double h_threshhold=0.004;
+
+                double h_threshhold=0.013;
+
                 this->h=h_threshhold;
 //                this->h = stepForT1 * T > h_threshhold ? h_threshhold : stepForT1 * T;//stepSize;
                 std::cout << "h=" << h << std::endl;
@@ -201,8 +204,44 @@ public:
 
 public:
 
+        ///
+    /// @param x
+    /// @param leftEnd
+    /// @param rightEnd
+    /// @param eps
+    /// @return return a value within distance eps from x, on the open interval (leftEnd, rightEnd)
+   double generate_uni_open_interval(const double &x, const double &leftEnd, const double &rightEnd, const double &eps);
 
+        ///
+    /// @param x proposed value
+    /// @param y current value
+    /// @param a left end of interval
+    /// @param b right end of interval
+    /// @param epsilon half length
+    /// @return proposal probability S(x|y)
+    double S_uni(const double &x, const double &y,const double &a, const double &b, const double &epsilon);
 
+    ///
+    /// @param xAVecCurr
+    /// @param xBVecCurr
+    /// @param xAVecNext
+    /// @param xBVecNext
+    void proposal_unit(const std::shared_ptr<double[]>& xAVecCurr ,const std::shared_ptr<double[]>&xBVecCurr,
+                       std::shared_ptr<double[]>& xAVecNext, std::shared_ptr<double[]>& xBVecNext);
+
+    ///
+    /// @param xAVecCurr
+    /// @param xBVecCurr
+    /// @param UCurr
+    /// @param xAVecNext
+    /// @param xBVecNext
+    /// @param UNext
+    /// @return
+    double acceptanceRatio_uni(const std::shared_ptr<double[]>& xAVecCurr ,const std::shared_ptr<double[]>&xBVecCurr
+            ,const double& UCurr,
+                               const std::shared_ptr<double[]>& xAVecNext,
+                               const std::shared_ptr<double[]>&  xBVecNext,
+                               double &UNext);
 
     ///
     /// @param xAVecCurr
