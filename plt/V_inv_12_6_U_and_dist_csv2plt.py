@@ -57,6 +57,7 @@ def pltU_dist(oneTFile):
 
     #U part
     meanU=np.mean(UVec)
+    meanU2=meanU**2
 
     varU=np.var(UVec,ddof=1)
     sigmaU=np.sqrt(varU)
@@ -65,16 +66,17 @@ def pltU_dist(oneTFile):
     fig=plt.figure()
     axU=fig.add_subplot()
     (n0,_,_)=axU.hist(UVec,bins=nbins)
-    meanU=np.round(meanU,4)
-    print("T="+str(TVal)+", E(U)="+str(meanU))
-    sigmaU=np.round(sigmaU,4)
+
+    meanUStr=str(np.round(meanU,4))
+    print("T="+str(TVal)+", E(U)="+meanUStr)
+    sigmaUStr=str(np.round(sigmaU,4))
 
     axU.set_title("T="+str(TVal))
     axU.set_xlabel("$U$")
     axU.set_ylabel("#")
     xPosUText=(np.max(UVec)-np.min(UVec))*1/2+np.min(UVec)
     yPosUText=np.max(n0)*2/3
-    axU.text(xPosUText,yPosUText,"mean="+str(meanU)+"\nsd="+str(sigmaU))
+    axU.text(xPosUText,yPosUText,"mean="+meanUStr+"\nsd="+sigmaUStr)
     plt.axvline(x=meanU,color="red",label="mean")
     axU.text(meanU*1.1,0.5*np.max(n0),str(meanU)+"$\pm$"+str(sigmaU),color="red")
     axU.hlines(y=0,xmin=meanU-sigmaU,xmax=meanU+sigmaU,color="green",linewidth=15)
@@ -129,6 +131,8 @@ def pltU_dist(oneTFile):
     LConfHalfLength=np.sqrt(LVar/len(LVec))
     print("E(L)="+str(LMean))
 
+    LVMean=np.mean(LVec*UVec)
+
     d1Array=np.zeros((nRow,unitCellNum),dtype=float)
     d2Array=np.zeros((nRow,unitCellNum-1),dtype=float)
 
@@ -152,15 +156,17 @@ def pltU_dist(oneTFile):
     d1ConfHalfInterval=np.sqrt(d1Var/LLength)
     d2ConfHalfInterval=np.sqrt(d2Var/LLength)
 
-    return [meanU,varU,UConfHalfLength,
+    return [meanU,varU,UConfHalfLength,meanU2,LVMean,
             LMean,LVar,LConfHalfLength,
             d1Mean,d1ConfHalfInterval,
             d2Mean,d2ConfHalfInterval
             ]
 
 UMeanValsAll=[]
+U2MeanValsAll=[]# E*(V^{2})
 UVarValsAll=[]
 UConfHalfLengthAll=[]
+LVMeanAll=[]
 
 LMeanValsAll=[]
 LVarValsAll=[]
@@ -178,11 +184,13 @@ tStatsStart=datetime.now()
 
 for k in range(0,len(sortedTFiles)):
     oneTFile=sortedTFiles[k]
-    meanU,varU,UConfHalfLength,LMean,LVar,LConfHalfLength,d1Mean,d1ConfHalfInterval,d2Mean,d2ConfHalfInterval=pltU_dist(oneTFile)
+    meanU,varU,UConfHalfLength,meanU2,LVMean,LMean,LVar,LConfHalfLength,d1Mean,d1ConfHalfInterval,d2Mean,d2ConfHalfInterval=pltU_dist(oneTFile)
 
     UMeanValsAll.append(meanU)
     UVarValsAll.append(varU)
     UConfHalfLengthAll.append(UConfHalfLength)
+    U2MeanValsAll.append(meanU2)
+    LVMeanAll.append(LVMean)
 
     LMeanValsAll.append(LMean)
     LVarValsAll.append(LVar)
@@ -200,6 +208,8 @@ for k in range(0,len(sortedTFiles)):
 UMeanValsAll=np.array(UMeanValsAll)
 UVarValsAll=np.array(UVarValsAll)
 UConfHalfLengthAll=np.array(UConfHalfLengthAll)
+U2MeanValsAll=np.array(U2MeanValsAll)
+LVMeanAll=np.array(LVMeanAll)
 
 LMeanValsAll=np.array(LMeanValsAll)
 LVarValsAll=np.array(LVarValsAll)
@@ -248,6 +258,51 @@ plt.savefig(csvDataFolderRoot+"/varV.png")
 plt.close()
 
 
+#######################################################
+#######################################################
+# C
+
+CValsAll=[]
+for j in range(0,len(UMeanValsAll)):
+    TTmp=sortedTVals[j]
+    CValsAll.append((UVarValsAll[j])/TTmp**2)
+
+CValsAll=np.array(CValsAll)
+#plot C
+plt.figure()
+plt.scatter(TToPlt,CValsAll[TInds],color="violet",label="mc")
+# varVVals=[varV(T) for T in interpolatedTVals]
+# plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
+plt.title("C")
+plt.xlabel("$T$")
+plt.legend(loc="best")
+plt.savefig(csvDataFolderRoot+"/C.png")
+plt.close()
+
+#######################################################
+
+#######################################################
+#alpha
+
+LVDiffTmp=LVMeanAll-LMeanValsAll*UMeanValsAll
+alphaValsAll=[]
+for j in range(0,len(sortedTVals)):
+    TTmp=sortedTVals[j]
+    alphaValsAll.append(LVDiffTmp[j]/(TTmp**2*LMeanValsAll[j]))
+alphaValsAll=np.array(alphaValsAll)
+
+#plot alpha
+print(TToPlt)
+print(alphaValsAll[TInds])
+plt.figure()
+plt.scatter(TToPlt,alphaValsAll[TInds],color="violet",label="mc")
+# varVVals=[varV(T) for T in interpolatedTVals]
+# plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
+plt.title("C")
+plt.xlabel("$T$")
+plt.legend(loc="best")
+plt.savefig(csvDataFolderRoot+"/alpha.png")
+plt.close()
 #######################################################
 
 
