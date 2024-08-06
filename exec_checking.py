@@ -10,7 +10,7 @@ def format_using_decimal(value):
     formatted_value = decimal_value.quantize(Decimal(1)) if decimal_value == decimal_value.to_integral() else decimal_value.normalize()
     return str(formatted_value)
 
-T=4
+T=8
 unitCellNum=2
 
 TStr=format_using_decimal(T)
@@ -18,7 +18,7 @@ TStr=format_using_decimal(T)
 #launch mc, i.e., giving initial conditions
 
 launchResult=subprocess.run(["python3", "launch_one_run.py", "./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/run_T"+str(T)+".mc.conf"])
-print(launchResult.stdout)
+# print(launchResult.stdout)
 if launchResult.returncode!=0:
     print("error in launch one run: "+str(launchResult.returncode))
 #############################################

@@ -57,7 +57,7 @@ public:
                 std::cout << "T=" << T << std::endl;
                 this->beta = 1 / T;
 //                double stepForT1 = 0.1;
-                double h_threshhold=0.01;
+                double h_threshhold=0.02;
                 this->h=h_threshhold;
 //                this->h = stepForT1 * T > h_threshhold ? h_threshhold : stepForT1 * T;//stepSize;
                 std::cout << "h=" << h << std::endl;
