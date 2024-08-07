@@ -15,7 +15,7 @@ if (len(sys.argv)!=2):
     print("wrong number of arguments")
     exit()
 rowNum=int(sys.argv[1])
-unitCellNum=2
+unitCellNum=5
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
 
@@ -270,10 +270,10 @@ for j in range(0,len(UMeanValsAll)):
 CValsAll=np.array(CValsAll)
 #plot C
 plt.figure()
-plt.scatter(TToPlt,CValsAll[TInds],color="violet",label="mc")
+plt.scatter(TToPlt,CValsAll[TInds]/unitCellNum,color="violet",label="mc")
 # varVVals=[varV(T) for T in interpolatedTVals]
 # plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
-plt.title("C")
+plt.title("C per unit cell, unit cell number="+str(unitCellNum))
 plt.xlabel("$T$")
 plt.legend(loc="best")
 plt.savefig(csvDataFolderRoot+"/C.png")
@@ -298,7 +298,7 @@ plt.figure()
 plt.scatter(TToPlt,alphaValsAll[TInds],color="violet",label="mc")
 # varVVals=[varV(T) for T in interpolatedTVals]
 # plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
-plt.title("C")
+plt.title("alpha per unit cell, unit cell number="+str(unitCellNum))
 plt.xlabel("$T$")
 plt.legend(loc="best")
 plt.savefig(csvDataFolderRoot+"/alpha.png")
@@ -404,7 +404,7 @@ for n in  range(0,len(sortedTVals)):
         textPos.append(posTmp)
 
     for j,val in enumerate(textPos):
-        axes[n].text(val,0.001,np.round(d1d2InterTmp[j+1],2),ha='center', va='bottom', fontsize=12)
+        axes[n].text(val+0.1,-0.01,np.round(d1d2InterTmp[j+1],2),ha='center', va='bottom', fontsize=12)
 
     axes[n].set_title("T="+str(sortedTVals[n]))
 
