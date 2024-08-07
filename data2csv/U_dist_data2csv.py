@@ -17,7 +17,7 @@ if (len(sys.argv)!=2):
 
 rowNum=int(sys.argv[1])
 
-unitCellNum=2
+unitCellNum=5
 rowDirRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/"
 obs_U_dist="U_dist"
 
