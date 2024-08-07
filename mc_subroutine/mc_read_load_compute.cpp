@@ -44,7 +44,7 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& xAVec, const st
 //            double LReset;
 
 //            this->proposal(xAVecCurr,xBVecCurr,xAVecNext,xBVecNext);
-            this->proposal_unit(xAVecCurr,xBVecCurr,xAVecNext,xBVecNext);
+            this->proposal_uni(xAVecCurr,xBVecCurr,xAVecNext,xBVecNext);
             double UNext;
             UCurr=(*potFuncPtr)(xAVecCurr.get(),xBVecCurr.get());
 //            double r= acceptanceRatio(xAVecCurr,xBVecCurr,UCurr,
@@ -380,7 +380,7 @@ double mc_computation::S_uni(const double &x, const double &y,const double &a, c
 /// @param xBVecCurr
 /// @param xAVecNext
 /// @param xBVecNext
-void mc_computation::proposal_unit(const std::shared_ptr<double[]>& xAVecCurr ,const std::shared_ptr<double[]>&xBVecCurr,
+void mc_computation::proposal_uni(const std::shared_ptr<double[]>& xAVecCurr ,const std::shared_ptr<double[]>&xBVecCurr,
                    std::shared_ptr<double[]>& xAVecNext, std::shared_ptr<double[]>& xBVecNext){
 
 
