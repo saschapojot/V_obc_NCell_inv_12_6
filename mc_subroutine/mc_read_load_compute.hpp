@@ -226,7 +226,7 @@ public:
     /// @param xBVecCurr
     /// @param xAVecNext
     /// @param xBVecNext
-    void proposal_unit(const std::shared_ptr<double[]>& xAVecCurr ,const std::shared_ptr<double[]>&xBVecCurr,
+    void proposal_uni(const std::shared_ptr<double[]>& xAVecCurr ,const std::shared_ptr<double[]>&xBVecCurr,
                        std::shared_ptr<double[]>& xAVecNext, std::shared_ptr<double[]>& xBVecNext);
 
     ///
