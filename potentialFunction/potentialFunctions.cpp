@@ -57,7 +57,7 @@ public:
         this->json2Coefs(coefsInStr);
         this->r1=std::pow(2.0*a1/b1,1.0/6.0);
         this->r2=std::pow(2.0*a2/b2,1.0/6.0);
-        this->lm=(static_cast<double >(N)*(r1+r2))*1.5;
+        this->lm=(static_cast<double >(N)*(r1+r2))*3;
         this->eps=((r1+r2)/2.0)/8;
 //        pow_result_tmp=std::shared_ptr<double[]>(new double[N], std::default_delete<double[]>());
 
