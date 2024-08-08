@@ -80,7 +80,7 @@ def auto_corrForOneColumn(colVec):
     :return:
     """
     same=False
-    eps=1e-3
+    eps=1e-2
     NLags=int(len(colVec)*3/4)
     with warnings.catch_warnings():
         warnings.filterwarnings("error")
@@ -94,6 +94,7 @@ def auto_corrForOneColumn(colVec):
     lagVal=-1
     if minAutc<=eps:
         lagVal=np.where(acfOfVecAbs<=eps)[0][0]
+    # np.savetxt("autc.txt",acfOfVecAbs[lagVal:],delimiter=',')
     return same,lagVal
 
 def ksTestOneColumn(colVec,lag):
