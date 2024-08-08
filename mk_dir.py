@@ -4,7 +4,7 @@ import pandas as pd
 
 
 #This script creates directories and conf files for mc
-TVals=[0.5,1,2,3,4,5,6,7,8]
+TVals=[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6,7,8]
 rowNum=0
 inParamFileName="./V_inv_12_6Params.csv"
 
@@ -73,7 +73,7 @@ def contents_to_conf(k):
         "\n",
         "observable_name=U_dist\n",
         "\n",
-        "effective_data_num_required=3000\n",
+        "effective_data_num_required=10000\n",
         "\n",
         "loop_to_write=10000\n",
         "\n",
