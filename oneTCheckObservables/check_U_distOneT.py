@@ -22,7 +22,7 @@ if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit(argErrCode)
 
-
+# print("entering")
 jsonFromSummaryLast=json.loads(sys.argv[1])
 jsonDataFromConf=json.loads(sys.argv[2])
 
@@ -173,7 +173,7 @@ def checkU_distDataFilesForOneT(U_dist_csv_dir):
 
     for j in range(0,unitCellNum):
         d1_array[:,j]=xB_array[:,j]-xA_array[:,j]
-
+    # print("unitCellNum-2="+str(unitCellNum-2))
     for j in range(0,unitCellNum-1):
         d2_array[:,j]=xA_array[:,j+1]-xB_array[:,j]
 
@@ -231,8 +231,9 @@ def checkU_distDataFilesForOneT(U_dist_csv_dir):
             lengthValAll.append(lengthTmp)
             statsValsAll.append(statTmp)
         # print(pValsAll)
-        print(statsValsAll)
+        print("stats="+str(statsValsAll))
         numDataPoints=np.min(lengthValAll)
+        print("pValsAll="+str(pValsAll))
         if np.min(pValsAll)>=pThreshHold and numDataPoints>=200:
             if numDataPoints>=effective_data_num_required:
                 newDataPointNum=0
