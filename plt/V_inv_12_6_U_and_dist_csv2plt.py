@@ -15,11 +15,11 @@ if (len(sys.argv)!=2):
     print("wrong number of arguments")
     exit()
 rowNum=int(sys.argv[1])
-unitCellNum=2
+unitCellNum=5
 
-csvDataFolderRoot="../bkp1.dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
+csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
 
-inCsvFile="../V2Params.csv"
+inCsvFile="../V_inv_12_6Params.csv"
 
 TVals=[]
 TFileNames=[]
@@ -270,10 +270,10 @@ for j in range(0,len(UMeanValsAll)):
 CValsAll=np.array(CValsAll)
 #plot C
 plt.figure()
-plt.scatter(TToPlt,CValsAll[TInds],color="violet",label="mc")
+plt.scatter(TToPlt,CValsAll[TInds]/unitCellNum,color="violet",label="mc")
 # varVVals=[varV(T) for T in interpolatedTVals]
 # plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
-plt.title("C")
+plt.title("C per unit cell, unit cell number="+str(unitCellNum))
 plt.xlabel("$T$")
 plt.legend(loc="best")
 plt.savefig(csvDataFolderRoot+"/C.png")
@@ -298,7 +298,7 @@ plt.figure()
 plt.scatter(TToPlt,alphaValsAll[TInds],color="violet",label="mc")
 # varVVals=[varV(T) for T in interpolatedTVals]
 # plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
-plt.title("C")
+plt.title("alpha per unit cell, unit cell number="+str(unitCellNum))
 plt.xlabel("$T$")
 plt.legend(loc="best")
 plt.savefig(csvDataFolderRoot+"/alpha.png")
@@ -353,5 +353,64 @@ plt.legend(loc="best")
 # plt.ylim((0,5.5))
 plt.savefig(csvDataFolderRoot+"/varL.png")
 plt.close()
+
+#######################################################
+
+
+
+#######################################################
+#plot d1, d2 using lattice
+
+d1d2InterleavedArray=[]
+for n in range(0,len(d1MeanVecsAll)):
+    d1VecOneTemp=d1MeanVecsAll[n]
+    d2VecOneTemp=d2MeanVecsAll[n]
+    rst=[]
+    for i ,(x,y) in enumerate(zip(d1VecOneTemp,d2VecOneTemp)):
+        rst.append(x)
+        rst.append(y)
+    rst.extend(d1VecOneTemp[len(d2VecOneTemp):])
+    rst=np.array(rst)
+    rst=np.insert(rst,0,0)
+
+    d1d2InterleavedArray.append(rst)
+d1d2InterleavedArray=np.array(d1d2InterleavedArray)
+
+positions=np.cumsum(d1d2InterleavedArray,axis=1)
+xANames=["x"+str(i)+"A" for i in  range(0,unitCellNum)]
+xBNames=["x"+str(i)+"B" for i in  range(0,unitCellNum)]
+xNames=[]
+for i,(x,y) in enumerate(zip(xANames,xBNames)):
+    xNames.append(x)
+    xNames.append(y)
+xNames.extend(xANames[len(xBNames):])
+fig,axes=plt.subplots(len(sortedTVals),1,figsize=(20,10))
+for n in  range(0,len(sortedTVals)):
+    positionOneTemp=positions[n,:]
+    for i , pos in enumerate(positionOneTemp):
+        color='red' if i % 2 == 0 else 'blue'
+        axes[n].plot(pos,0,"o",color=color)
+    axes[n].set_xticks(positionOneTemp)
+    axes[n].set_xticklabels(xNames)
+    # Hide the y-axis
+    axes[n].get_yaxis().set_visible(False)
+    # Draw a horizontal line representing the axis
+    axes[n].axhline(0, color='black', linewidth=0.5)
+
+    d1d2InterTmp=d1d2InterleavedArray[n,:]
+    textPos=[]
+    for j in range(0,len(positionOneTemp)-1):
+        posTmp=(positionOneTemp[j+1]-positionOneTemp[j])/2+positionOneTemp[j]
+        textPos.append(posTmp)
+
+    for j,val in enumerate(textPos):
+        axes[n].text(val+0.1,-0.01,np.round(d1d2InterTmp[j+1],2),ha='center', va='bottom', fontsize=12)
+
+    axes[n].set_title("T="+str(sortedTVals[n]))
+
+
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+fig.suptitle('OBC, average distances')
+plt.savefig(csvDataFolderRoot+"/lattice.png")
 
 #######################################################

@@ -116,7 +116,7 @@ def ksTestOneColumn(colVec,lag):
     selectedVecPart0=colVecToCompute[:lenPart]
     selectedVecPart1=colVecToCompute[lenPart:]
     result=ks_2samp(selectedVecPart0,selectedVecPart1)
-    return result.pvalue, lenPart*2
+    return result.pvalue,result.statistic, lenPart*2
 
 def checkU_distDataFilesForOneT(U_dist_csv_dir):
     """
@@ -205,28 +205,33 @@ def checkU_distDataFilesForOneT(U_dist_csv_dir):
             fptr.writelines(msg)
             exit(sameErrCode)
 
-    pThreshHold=0.05
+    pThreshHold=0.01
     #if one lag==-1, then the auto-correlation is too large
 
     if np.min(dist_lags)>0:
         lagMax=np.max(dist_lags)
         pValsAll=[]
         lengthValAll=[]
+        statsValsAll=[]
 
-        pUTmp,lengthUTmp=ksTestOneColumn(UVec,lagMax)
+        pUTmp,statUTmp,lengthUTmp=ksTestOneColumn(UVec,lagMax)
         pValsAll.append(pUTmp)
         lengthValAll.append(lengthUTmp)
+        statsValsAll.append(statUTmp)
 
         for j in range(0,unitCellNum):
-            pTmp,lengthTmp=ksTestOneColumn(d1_array[:,j],lagMax)
+            pTmp,statTmp,lengthTmp=ksTestOneColumn(d1_array[:,j],lagMax)
             pValsAll.append(pTmp)
             lengthValAll.append(lengthTmp)
+            statsValsAll.append(statTmp)
 
         for j in range(0,unitCellNum-1):
-            pTmp,lengthTmp=ksTestOneColumn(d2_array[:,j],lagMax)
+            pTmp,statTmp,lengthTmp=ksTestOneColumn(d2_array[:,j],lagMax)
             pValsAll.append(pTmp)
             lengthValAll.append(lengthTmp)
-
+            statsValsAll.append(statTmp)
+        # print(pValsAll)
+        print(statsValsAll)
         numDataPoints=np.min(lengthValAll)
         print("pValsAll="+str(pValsAll))
         if np.min(pValsAll)>=pThreshHold and numDataPoints>=200:
