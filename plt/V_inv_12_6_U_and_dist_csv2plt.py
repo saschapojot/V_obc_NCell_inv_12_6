@@ -262,47 +262,50 @@ plt.close()
 #######################################################
 # C
 
-CValsAll=[]
-for j in range(0,len(UMeanValsAll)):
-    TTmp=sortedTVals[j]
-    CValsAll.append((UVarValsAll[j])/TTmp**2)
 
-CValsAll=np.array(CValsAll)
-#plot C
-plt.figure()
-plt.scatter(TToPlt,CValsAll[TInds]/unitCellNum,color="violet",label="mc")
-# varVVals=[varV(T) for T in interpolatedTVals]
-# plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
-plt.title("C per unit cell, unit cell number="+str(unitCellNum))
-plt.xlabel("$T$")
-plt.legend(loc="best")
-plt.savefig(csvDataFolderRoot+"/C.png")
-plt.close()
+
+#
+# CValsAll=[]
+# for j in range(0,len(UMeanValsAll)):
+#     TTmp=sortedTVals[j]
+#     CValsAll.append((UVarValsAll[j])/TTmp**2)
+#
+# CValsAll=np.array(CValsAll)
+# #plot C
+# plt.figure()
+# plt.scatter(TToPlt,CValsAll[TInds]/unitCellNum,color="violet",label="mc")
+# # varVVals=[varV(T) for T in interpolatedTVals]
+# # plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
+# plt.title("C per unit cell, unit cell number="+str(unitCellNum))
+# plt.xlabel("$T$")
+# plt.legend(loc="best")
+# plt.savefig(csvDataFolderRoot+"/bkp.C.png")
+# plt.close()
 
 #######################################################
 
 #######################################################
 #alpha
 
-LVDiffTmp=LVMeanAll-LMeanValsAll*UMeanValsAll
-alphaValsAll=[]
-for j in range(0,len(sortedTVals)):
-    TTmp=sortedTVals[j]
-    alphaValsAll.append(LVDiffTmp[j]/(TTmp**2*LMeanValsAll[j]))
-alphaValsAll=np.array(alphaValsAll)
-
-#plot alpha
-# print(TToPlt)
-# print(alphaValsAll[TInds])
-plt.figure()
-plt.scatter(TToPlt,alphaValsAll[TInds],color="violet",label="mc")
-# varVVals=[varV(T) for T in interpolatedTVals]
-# plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
-plt.title("alpha per unit cell, unit cell number="+str(unitCellNum))
-plt.xlabel("$T$")
-plt.legend(loc="best")
-plt.savefig(csvDataFolderRoot+"/alpha.png")
-plt.close()
+# LVDiffTmp=LVMeanAll-LMeanValsAll*UMeanValsAll
+# alphaValsAll=[]
+# for j in range(0,len(sortedTVals)):
+#     TTmp=sortedTVals[j]
+#     alphaValsAll.append(LVDiffTmp[j]/(TTmp**2*LMeanValsAll[j]))
+# alphaValsAll=np.array(alphaValsAll)/unitCellNum
+#
+# #plot alpha
+# # print(TToPlt)
+# # print(alphaValsAll[TInds])
+# plt.figure()
+# plt.scatter(TToPlt,alphaValsAll[TInds],color="violet",label="mc")
+# # varVVals=[varV(T) for T in interpolatedTVals]
+# # plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
+# plt.title("alpha per unit cell, unit cell number="+str(unitCellNum))
+# plt.xlabel("$T$")
+# plt.legend(loc="best")
+# plt.savefig(csvDataFolderRoot+"/bkp.alpha.png")
+# plt.close()
 #######################################################
 
 
