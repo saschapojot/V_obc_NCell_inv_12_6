@@ -22,7 +22,7 @@ if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit(argErrCode)
 
-
+# print("entering")
 jsonFromSummaryLast=json.loads(sys.argv[1])
 jsonDataFromConf=json.loads(sys.argv[2])
 
@@ -231,7 +231,7 @@ def checkU_distDataFilesForOneT(U_dist_csv_dir):
             lengthValAll.append(lengthTmp)
             statsValsAll.append(statTmp)
         # print(pValsAll)
-        print(statsValsAll)
+        print("stats="+str(statsValsAll))
         numDataPoints=np.min(lengthValAll)
         print("pValsAll="+str(pValsAll))
         if np.min(pValsAll)>=pThreshHold and numDataPoints>=200:

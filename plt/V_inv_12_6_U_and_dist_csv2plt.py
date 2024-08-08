@@ -15,7 +15,7 @@ if (len(sys.argv)!=2):
     print("wrong number of arguments")
     exit()
 rowNum=int(sys.argv[1])
-unitCellNum=5
+unitCellNum=2
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
 
@@ -237,10 +237,10 @@ ax.errorbar(TToPlt,UMeanValsAll[TInds],yerr=UConfHalfLengthAll,fmt='o',color="bl
 # EVVals=[EV(T) for T in interpolatedTVals]
 # ax.plot(interpolatedTVals,EVVals,color="green",label="theory")
 ax.set_xlabel('$T$')
-ax.set_ylabel("E(V)")
-ax.set_title("E(V)")
+ax.set_ylabel("E(U)")
+ax.set_title("E(U)")
 plt.legend(loc="best")
-plt.savefig(csvDataFolderRoot+"/EV.png")
+plt.savefig(csvDataFolderRoot+"/EU.png")
 plt.close()
 #######################################################
 
@@ -251,10 +251,10 @@ plt.figure()
 plt.scatter(TToPlt,UVarValsAll[TInds],color="violet",label="mc")
 # varVVals=[varV(T) for T in interpolatedTVals]
 # plt.plot(interpolatedTVals,varVVals,color="navy",label="theory")
-plt.title("var(V)")
+plt.title("var(U)")
 plt.xlabel("$T$")
 plt.legend(loc="best")
-plt.savefig(csvDataFolderRoot+"/varV.png")
+plt.savefig(csvDataFolderRoot+"/varU.png")
 plt.close()
 
 

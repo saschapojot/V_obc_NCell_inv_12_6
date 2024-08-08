@@ -14,7 +14,7 @@ if (len(sys.argv)!=2):
     print("wrong number of arguments")
     exit()
 rowNum=int(sys.argv[1])
-unitCellNum=2
+unitCellNum=5
 
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
