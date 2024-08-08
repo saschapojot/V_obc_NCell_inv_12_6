@@ -11,11 +11,11 @@ import pandas as pd
 
 #This script loads csv data and plot
 
-if (len(sys.argv)!=2):
+if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit()
 rowNum=int(sys.argv[1])
-unitCellNum=2
+unitCellNum=int(sys.argv[2])
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
 

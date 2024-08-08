@@ -10,11 +10,11 @@ import scipy.stats as stats
 
 #This script loads csv data and plot C, with condidence interval
 
-if (len(sys.argv)!=2):
+if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit()
 rowNum=int(sys.argv[1])
-unitCellNum=5
+unitCellNum=int(sys.argv[2])
 
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"

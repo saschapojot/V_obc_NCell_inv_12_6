@@ -9,11 +9,11 @@ import pandas as pd
 import scipy.stats as stats
 
 #This script loads csv data and plot U, with condidence interval
-if (len(sys.argv)!=2):
+if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit()
 rowNum=int(sys.argv[1])
-unitCellNum=2
+unitCellNum=int(sys.argv[2])
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
 
@@ -130,7 +130,7 @@ fig,ax=plt.subplots()
 ax.errorbar(TToPlt,UValsAll[TInds],yerr=U_err_bar[TInds],fmt='o',color="black", ecolor='r', capsize=5,label='mc')
 
 ax.set_xlabel('$T$')
-ax.set_ylabel("C")
+ax.set_ylabel("U")
 ax.set_title("U per unit cell, unit cell number="+str(unitCellNum))
 plt.legend(loc="best")
 plt.savefig(csvDataFolderRoot+"/UPerUnitCell.png")

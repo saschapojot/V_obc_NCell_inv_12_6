@@ -10,11 +10,11 @@ import scipy.stats as stats
 
 #This script loads csv data and plot alpha, with condidence interval
 
-if (len(sys.argv)!=2):
+if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit()
 rowNum=int(sys.argv[1])
-unitCellNum=5
+unitCellNum=int(sys.argv[2])
 
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
@@ -158,8 +158,8 @@ fig,ax=plt.subplots()
 ax.errorbar(TToPlt,alphaValsAll[TInds],yerr=alpha_err_var[TInds],fmt='o',color="blue", ecolor='r', capsize=5,label='mc')
 
 ax.set_xlabel('$T$')
-ax.set_ylabel("C")
-ax.set_title("C per unit cell, unit cell number="+str(unitCellNum))
+ax.set_ylabel("$\\alpha$")
+ax.set_title("$\\alpha$ per unit cell, unit cell number="+str(unitCellNum))
 plt.legend(loc="best")
 plt.savefig(csvDataFolderRoot+"/alpha.png")
 plt.close()
