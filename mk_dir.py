@@ -75,7 +75,7 @@ def contents_to_conf(k):
         "\n",
         "observable_name=U_dist\n",
         "\n",
-        "effective_data_num_required=10000\n",
+        "effective_data_num_required=15000\n",
         "\n",
         "loop_to_write=10000\n",
         "\n",
