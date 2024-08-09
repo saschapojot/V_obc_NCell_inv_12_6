@@ -7,7 +7,15 @@
 #include "../potentialFunction/potentialFunctionPrototype.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/math/quadrature/gauss_kronrod.hpp>
-//#include <boost/math/quadrature/trapezoidal.hpp>
+//#include <boost/math/special_functions/next.hpp>
+#include <boost/python.hpp>
+#include <boost/python/object/pickle_support.hpp>
+
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+//#include <boost/random/random_device.hpp>
+//#include <boost/random/ranlux.hpp>
+//#include <boost/random/uniform_real_distribution.hpp>
+//#include <boost/serialization/vector.hpp>
 #include <cfenv> // for floating-point exceptions
 #include <chrono>
 #include <cstdlib>
@@ -22,6 +30,7 @@
 #include <regex>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <typeinfo>
 #include <vector>
 
@@ -31,7 +40,7 @@ const auto PI=M_PI;
 
 class mc_computation {
 public:
-    mc_computation(const std::string &cppInParamsFileName) {
+    mc_computation(const std::string &cppInParamsFileName): e2(std::random_device{}())  {
         std::ifstream file(cppInParamsFileName);
         if (!file.is_open()) {
             std::cerr << "Failed to open the file." << std::endl;
@@ -59,7 +68,7 @@ public:
                 this->beta = 1 / T;
 //                double stepForT1 = 0.1;
 
-                double h_threshhold=0.01;
+                double h_threshhold=0.004;
 
                 this->h=h_threshhold;
 //                this->h = stepForT1 * T > h_threshhold ? h_threshhold : stepForT1 * T;//stepSize;
@@ -174,7 +183,7 @@ public:
         std::cout<<"xAVecInit: \n";
         print_shared_ptr(xAVecInit,N);
         std::cout<<"xBVecInit: \n";
-        print_shared_ptr(xBVecInit,N-1);
+        print_shared_ptr(xBVecInit,N);
         this->potFuncPtr = createPotentialFunction(potFuncName, coefsToPotFunc);
         potFuncPtr->init();
         this->varNum = 2*N+1;//U,xA, xB
@@ -330,6 +339,10 @@ public:
 
             }
 
+
+    void save_array_to_pickle(double *ptr, std::size_t size, const std::string& filename);
+
+
 public:
     double T;// temperature
     double beta;
@@ -353,6 +366,7 @@ public:
     std::string potFuncName;
     double M;
     int N;//unit cell number
+    std::ranlux24_base e2;
 
 };
 

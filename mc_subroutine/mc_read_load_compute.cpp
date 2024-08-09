@@ -29,9 +29,16 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& xAVec, const st
     std::shared_ptr<double[]> xBVecNext=std::shared_ptr<double[]>(new double[N], std::default_delete<double[]>());
 
     double UCurr;
-    std::random_device rd;
-    std::ranlux24_base e2(rd());
+//    std::random_device rd;
+//    std::ranlux24_base e2(rd());
     std::uniform_real_distribution<> distUnif01(0, 1);//[0,1)
+    std::chrono::duration<double> totalTime_propose_uni(0);
+    std::chrono::duration<double> totalTime_UCurr(0);
+    std::chrono::duration<double> totalTime_acceptanceRatio_uni(0);
+    std::chrono::duration<double> totalTime_acc_copy(0);
+    std::chrono::duration<double> totalTime_copy(0);
+    std::chrono::duration<double> totalTime_save(0);
+
     size_t loopStart = loopInit;
     for (size_t fls = 0; fls < flushNum; fls++) {
         const auto tMCStart{std::chrono::steady_clock::now()};
@@ -44,13 +51,34 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& xAVec, const st
 //            double LReset;
 
 //            this->proposal(xAVecCurr,xBVecCurr,xAVecNext,xBVecNext);
+
+            //propose next
+            auto startProposalUni = std::chrono::steady_clock::now();
             this->proposal_uni(xAVecCurr,xBVecCurr,xAVecNext,xBVecNext);
+            auto endProposalUni = std::chrono::steady_clock::now();
+            totalTime_propose_uni += endProposalUni - startProposalUni;
+
+
+            //next U
+            auto startUCurr = std::chrono::steady_clock::now();
             double UNext;
             UCurr=(*potFuncPtr)(xAVecCurr.get(),xBVecCurr.get());
+            auto endUCurr = std::chrono::steady_clock::now();
+            totalTime_UCurr+=endUCurr-startUCurr;
+
+
+            //accept reject
+            auto start_acc=std::chrono::steady_clock::now();
 //            double r= acceptanceRatio(xAVecCurr,xBVecCurr,UCurr,
 //                                      xAVecNext,xBVecNext,UNext);
             double r=this->acceptanceRatio_uni(xAVecCurr,xBVecCurr,UCurr,
                                       xAVecNext,xBVecNext,UNext);
+            auto end_acc=std::chrono::steady_clock::now();
+            totalTime_acceptanceRatio_uni+=end_acc-start_acc;
+
+
+            //accept-copy
+            auto acc_copyStart=std::chrono::steady_clock::now();
             double u = distUnif01(e2);
             if (u <= r) {
 
@@ -61,6 +89,12 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& xAVec, const st
                 UCurr = UNext;
 
             }//end of accept-reject
+            auto acc_copyEnd=std::chrono::steady_clock::now();
+            totalTime_acc_copy+=acc_copyEnd-acc_copyStart;
+
+
+            //copy and save
+            auto copyStart=std::chrono::steady_clock::now();
             U_dist_ptr[varNum*j+0]=UCurr;
 
             for(int n=1;n<1+N;n++){
@@ -69,25 +103,45 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& xAVec, const st
             for(int n=N+1;n<=2*N;n++){
                 U_dist_ptr[varNum*j+n]=xBVecCurr[n-N-1];
             }
+            auto copyEnd=std::chrono::steady_clock::now();
+            totalTime_copy+=copyEnd-copyStart;
 
         }//end for loop
+
+        //save to csv
+
+        auto saveStart=std::chrono::steady_clock::now();
         size_t loopEnd = loopStart + loopToWrite - 1;
         std::string fileNameMiddle = "loopStart" + std::to_string(loopStart) + "loopEnd" + std::to_string(loopEnd);
-        std::string out_U_distPickleFileName = this->U_dist_dataDir + "/" + fileNameMiddle + ".U_dist.csv";
+//        std::string out_U_distPickleFileName = this->U_dist_dataDir + "/" + fileNameMiddle + ".U_dist.csv";
+        std::string out_U_distPickleFileName = this->U_dist_dataDir + "/" + fileNameMiddle + ".U_dist.pkl";
 
         //save U_dist_ptr
-        saveArrayToCSV(U_dist_ptr,varNum * loopToWrite,out_U_distPickleFileName,varNum);
+//        saveArrayToCSV(U_dist_ptr,varNum * loopToWrite,out_U_distPickleFileName,varNum);
+        save_array_to_pickle(U_dist_ptr.get(),varNum * loopToWrite,out_U_distPickleFileName);
         const auto tMCEnd{std::chrono::steady_clock::now()};
         const std::chrono::duration<double> elapsed_secondsAll{tMCEnd - tMCStart};
         std::cout << "loop " + std::to_string(loopStart) + " to loop " + std::to_string(loopEnd) + ": "
                   << elapsed_secondsAll.count() / 3600.0 << " h" << std::endl;
 
         loopStart = loopEnd + 1;
+        auto saveEnd=std::chrono::steady_clock::now();
+        totalTime_save+=saveEnd-saveStart;
+
     }//end flush for loop
 
     std::cout<<"mc executed for "<<flushNum<<" flushes."<<std::endl;
 
+    std::cout<<"totalTime_propose_uni is "<<totalTime_propose_uni.count()<<" s\n";
 
+    std::cout<<"totalTime_UCurr is "<<totalTime_UCurr.count()<<" s\n";
+
+    std::cout<<"totalTime_acceptanceRatio_uni is "<<totalTime_acceptanceRatio_uni.count()<<" s\n";
+
+    std::cout<<"totalTime_acc_copy is "<<totalTime_acc_copy.count()<<" s\n";
+
+    std::cout<<"totalTime_copy is "<<totalTime_copy.count()<<" s\n";
+    std::cout<<"totalTime_save is "<<totalTime_save.count()<<" s\n";
 }
 
 
@@ -325,16 +379,11 @@ double xPlusEps=x+eps;
 
 double unif_left_end=xMinusEps<leftEnd?leftEnd:xMinusEps;
 double unif_right_end=xPlusEps>rightEnd?rightEnd:xPlusEps;
-//    std::cout << std::setprecision(std::numeric_limits<double>::max_digits10);
-//std::cout<<"x="<<x<<std::endl;
-//std::cout<<"unif_left_end="<<unif_left_end<<std::endl;
-//std::cout<<"unif_right_end="<<unif_right_end<<std::endl;
-    std::random_device rd;
-    std::ranlux24_base e2(rd());
-// in std::uniform_real_distribution<> distUnif(a,b), the random numbers are from interval [a, b)
-//we need random numbers from interval (a,b)
+
+//    std::random_device rd;
+//    std::ranlux24_base e2(rd());
+
 double unif_left_end_double_on_the_right=std::nextafter(unif_left_end, std::numeric_limits<double>::infinity());
-//    std::cout<<"unif_left_end_double_on_the_right="<<unif_left_end_double_on_the_right<<std::endl;
 
 
 
@@ -386,17 +435,61 @@ void mc_computation::proposal_uni(const std::shared_ptr<double[]>& xAVecCurr ,co
 
 
 
-
+    ////////////////////////////////////////////////////////////
+    /// serial code
     double lm=potFuncPtr->getLm();
-
+    // Parallelize the loop for xAVecNext
+//    #pragma omp parallel for
     for(int i=0;i<N;i++){
 
         xAVecNext[i]= generate_uni_open_interval(xAVecCurr[i],0,lm,h);
     }
-
+    // Parallelize the loop for xBVecNext
+//    #pragma omp parallel for
     for(int i=0;i<N;i++){
         xBVecNext[i]=generate_uni_open_interval(xBVecCurr[i],0,lm,h);
     }
+    ///end serial code
+    ////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////
+    //parallel code
+//    double lm = potFuncPtr->getLm();
+//
+//    // Define a lambda function for concurrent execution
+//    auto generate_for_range = [&](int start, int end, const std::shared_ptr<double[]>& xCurr, std::shared_ptr<double[]>& xNext) {
+//        for (int i = start; i < end; ++i) {
+//            xNext[i] = generate_uni_open_interval(xCurr[i], 0, lm, h);
+//        }
+//    };
+//    // Determine the number of threads to use
+//    unsigned int numThreads = std::thread::hardware_concurrency();
+//    int chunkSize = N / numThreads;
+//    std::vector<std::thread> threads;
+//    // Launch threads to process xAVecNext
+//    for (unsigned int t = 0; t < numThreads; ++t) {
+//        int start = t * chunkSize;
+//        int end = (t == numThreads - 1) ? N : start + chunkSize;
+//        threads.emplace_back(generate_for_range, start, end, std::ref(xAVecCurr), std::ref(xAVecNext));    }
+//    // Join threads for xAVecNext
+//    for (auto& thread : threads) {
+//        thread.join();
+//    }
+//    // Clear the threads vector and reuse it for xBVecNext
+//    threads.clear();
+//
+//    // Launch threads to process xBVecNext
+//    for (unsigned int t = 0; t < numThreads; ++t) {
+//        int start = t * chunkSize;
+//        int end = (t == numThreads - 1) ? N : start + chunkSize;
+//        threads.emplace_back(generate_for_range, start, end, std::ref(xBVecCurr), std::ref(xBVecNext));    }
+//    // Join threads for xBVecNext
+//    for (auto& thread : threads) {
+//        thread.join();
+//    }
+    //end parallel code
+    ////////////////////////////////////////////////////////////////
 
 }
 
@@ -457,6 +550,59 @@ double mc_computation::acceptanceRatio_uni(const std::shared_ptr<double[]>& xAVe
 
     }
     return std::min(1.0,R);
+
+
+}
+
+
+void mc_computation::save_array_to_pickle(double *ptr, std::size_t size, const std::string& filename){
+    using namespace boost::python;
+    try {
+        Py_Initialize();  // Initialize the Python interpreter
+        if (!Py_IsInitialized()) {
+            throw std::runtime_error("Failed to initialize Python interpreter");
+        }
+
+        // Debug output
+        std::cout << "Python interpreter initialized successfully." << std::endl;
+
+        // Import the pickle module
+        object pickle = import("pickle");
+        object pickle_dumps = pickle.attr("dumps");
+
+        // Create a Python list from the C++ array
+        list py_list;
+        for (std::size_t i = 0; i < size; ++i) {
+            py_list.append(ptr[i]);
+        }
+
+        // Serialize the list using pickle.dumps
+        object serialized_array = pickle_dumps(py_list);
+
+        // Extract the serialized data as a string
+        std::string serialized_str = extract<std::string>(serialized_array);
+
+        // Write the serialized data to a file
+        std::ofstream file(filename, std::ios::binary);
+        if (!file) {
+            throw std::runtime_error("Failed to open file for writing");
+        }
+        file.write(serialized_str.data(), serialized_str.size());
+        file.close();
+
+        // Debug output
+        std::cout << "Array serialized and written to file successfully." << std::endl;
+    } catch (const error_already_set&) {
+        PyErr_Print();
+        std::cerr << "Boost.Python error occurred." << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+
+    if (Py_IsInitialized()) {
+        Py_Finalize();  // Finalize the Python interpreter
+    }
+
 
 
 }
