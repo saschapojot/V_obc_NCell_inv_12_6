@@ -1,7 +1,7 @@
 import subprocess
 from decimal import Decimal
 
-
+import sys
 #this scrip executes mc by checking statistics
 def format_using_decimal(value):
     # Convert the float to a Decimal
@@ -11,7 +11,11 @@ def format_using_decimal(value):
     return str(formatted_value)
 
 
-T=0.5
+if (len(sys.argv)!=2):
+    print("wrong number of arguments")
+    exit()
+
+T=float(sys.argv[1])
 unitCellNum=5
 
 TStr=format_using_decimal(T)
