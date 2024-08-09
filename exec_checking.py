@@ -1,7 +1,7 @@
 import subprocess
 from decimal import Decimal
 
-
+import sys
 #this scrip executes mc by checking statistics
 def format_using_decimal(value):
     # Convert the float to a Decimal
@@ -11,14 +11,20 @@ def format_using_decimal(value):
     return str(formatted_value)
 
 
-T=5
+
+if (len(sys.argv)!=2):
+    print("wrong number of arguments")
+    exit()
+
+T=float(sys.argv[1])
+
 unitCellNum=5
 
 TStr=format_using_decimal(T)
 #############################################
 #launch mc, i.e., giving initial conditions
 
-launchResult=subprocess.run(["python3", "launch_one_run.py", "./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/run_T"+str(T)+".mc.conf"])
+launchResult=subprocess.run(["python3", "launch_one_run.py", "./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/run_T"+TStr+".mc.conf"])
 # print(launchResult.stdout)
 if launchResult.returncode!=0:
     print("error in launch one run: "+str(launchResult.returncode))
