@@ -26,6 +26,10 @@ if (len(sys.argv)!=3):
 # print("entering")
 jsonFromSummaryLast=json.loads(sys.argv[1])
 jsonDataFromConf=json.loads(sys.argv[2])
+# jsonFromSummaryLast={"startingFileInd": "74", "startingVecPosition": "500000", "newMcStepNum": "78940680", "newDataPointNum": "10920", "newFlushNum": "79", "TDirRoot": "./dataAllUnitCell10/row0/T0.5/", "U_dist_dataDir": "./dataAllUnitCell10/row0/T0.5//U_dist_dataFiles/"}
+
+# jsonDataFromConf={"T": "0.5", "erase_data_if_exist": "False", "search_and_read_summary_file": "True", "observable_name": "U_dist", "potential_function_name": "V_inv_12_6", "effective_data_num_required": "15000", "loop_to_write": "1000000", "default_flush_num": "10", "coefs": "25,80,15,67", "confFileName": "./dataAllUnitCell10/row0/T0.5/run_T0.5.mc.conf", "unitCellNum": "10"}
+
 
 TDirRoot=jsonFromSummaryLast["TDirRoot"]
 U_dist_dataDir=jsonFromSummaryLast["U_dist_dataDir"]
@@ -33,7 +37,7 @@ effective_data_num_required=int(jsonDataFromConf["effective_data_num_required"])
 N=int(jsonDataFromConf["unitCellNum"])
 
 summary_U_distFile=TDirRoot+"/summary_U_dist.txt"
-
+# print(summary_U_distFile)
 
 def sort_data_files_by_loopEnd(oneDir):
     dataFilesAll=[]
@@ -82,7 +86,8 @@ def auto_corrForOneColumn(colVec):
     """
     same=False
     eps=1e-2
-    NLags=int(len(colVec)*3/4)
+    NLags=int(len(colVec)*1/10)
+    print("NLags="+str(NLags))
     with warnings.catch_warnings():
         warnings.filterwarnings("error")
     try:
@@ -151,11 +156,11 @@ def checkU_distDataFilesForOneT(U_dist_data_dir):
 
     UVec=inArrStart[startingVecPosition:,0]
     xAxB_array=inArrStart[startingVecPosition:,1:]
-
+    # print(UVec[:10])
 
     #read the rest of the pkl files
     for pkl_file in U_dist_sortedDataFilesToRead[(startingFileInd+1):]:
-
+        print("reading: "+str(pkl_file))
         with open(pkl_file,"rb") as fptr:
             inArr=np.reshape(pickle.load(fptr),(-1,2*N+1))
 
@@ -171,7 +176,7 @@ def checkU_distDataFilesForOneT(U_dist_data_dir):
     nRow,nCol=xAxB_array.shape
 
     unitCellNum=N
-
+    # print(UVec[-10:])
     xA_array=xAxB_array[:,:unitCellNum]
     xB_array=xAxB_array[:,unitCellNum:]
 
@@ -202,7 +207,6 @@ def checkU_distDataFilesForOneT(U_dist_data_dir):
         sameTmp,lagTmp=auto_corrForOneColumn(d2_array[:,j])
         dist_same.append(sameTmp)
         dist_lags.append(lagTmp)
-
 
     same_exist=any(dist_same)
 

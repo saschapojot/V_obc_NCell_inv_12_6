@@ -6,7 +6,8 @@ int main(int argc, char *argv[]) {
         std::cout << "wrong arguments" << std::endl;
         std::exit(2);
     }
-
+//    unsigned int numThreads = std::thread::hardware_concurrency();
+//    std::cout << "numThreads=" << numThreads << std::endl;
     auto mcObj=mc_computation(std::string(argv[1]));
     mcObj.init_and_run();
 

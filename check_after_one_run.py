@@ -83,22 +83,44 @@ else:
 
 ##########################################################
 #statistics
-checkU_distErrCode=5
-# checkU_distResult=subprocess.run(["python3","./oneTCheckObservables/check_U_distOneT.py",json.dumps(jsonFromSummary),json.dumps(jsonDataFromConf)],capture_output=True, text=True)
+checkU_distErrCode = 5
+# print("entering statistics")
+# Start the subprocess
+print("jsonFromSummary="+json.dumps(jsonFromSummary))
+print("jsonDataFromConf="+json.dumps(jsonDataFromConf))
+checkU_distProcess = subprocess.Popen(
+    ["python3", "./oneTCheckObservables/check_U_distOneT_pkl.py",
+     json.dumps(jsonFromSummary), json.dumps(jsonDataFromConf)],
+    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+)
 
-
-checkU_distProcess=subprocess.Popen(["python3","./oneTCheckObservables/check_U_distOneT_pkl.py",json.dumps(jsonFromSummary),json.dumps(jsonDataFromConf)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+# Read output in real-time
 while True:
     output = checkU_distProcess.stdout.readline()
     if output == '' and checkU_distProcess.poll() is not None:
         break
     if output:
         print(output.strip())
+
+# Collect remaining output and error messages
 stdout, stderr = checkU_distProcess.communicate()
+# Check if the process was killed
+if checkU_distProcess.returncode is not None:
+    if checkU_distProcess.returncode < 0:
+        # Process was killed by a signal
+        print(f"Process was killed by signal: {-checkU_distProcess.returncode}")
+    else:
+        # Process exited normally
+        print(f"Process exited with return code: {checkU_distProcess.returncode}")
+else:
+    print("Process is still running")
+# Print any remaining standard output
 if stdout:
     print(stdout.strip())
+
+# Handle errors and print the return code if there was an error
 if stderr:
-    print("checkU_distProcess return code="+str(checkU_distProcess.returncode))
+    print(f"checkU_distProcess return code={checkU_distProcess.returncode}")
     print(stderr.strip())
 
 ##########################################################
