@@ -87,7 +87,7 @@ checkU_distErrCode=5
 # checkU_distResult=subprocess.run(["python3","./oneTCheckObservables/check_U_distOneT.py",json.dumps(jsonFromSummary),json.dumps(jsonDataFromConf)],capture_output=True, text=True)
 
 
-checkU_distProcess=subprocess.Popen(["python3","./oneTCheckObservables/check_U_distOneT.py",json.dumps(jsonFromSummary),json.dumps(jsonDataFromConf)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+checkU_distProcess=subprocess.Popen(["python3","./oneTCheckObservables/check_U_distOneT_pkl.py",json.dumps(jsonFromSummary),json.dumps(jsonDataFromConf)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 while True:
     output = checkU_distProcess.stdout.readline()
     if output == '' and checkU_distProcess.poll() is not None:

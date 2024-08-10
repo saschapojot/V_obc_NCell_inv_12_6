@@ -5,12 +5,12 @@ import pandas as pd
 
 #This script creates directories and conf files for mc
 
-TVals=[5,6]
+TVals=[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6]
 
 rowNum=0
 inParamFileName="./V_inv_12_6Params.csv"
 
-unitCellNum=5
+unitCellNum=10
 
 inDf=pd.read_csv(inParamFileName)
 oneRow=inDf.iloc[rowNum,:]

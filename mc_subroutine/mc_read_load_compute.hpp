@@ -320,6 +320,8 @@ public:
 
     void init_and_run();
 
+    void saveLastData2Csv(const std::shared_ptr<double[]>& array, const  int& arraySize, const std::string& filename, const int& numbersPerRow);
+
 
     template<class T>
             void print_shared_ptr(const std::shared_ptr<T> &ptr,const int& size){

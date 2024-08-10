@@ -18,7 +18,7 @@ if (len(sys.argv)!=2):
 
 T=float(sys.argv[1])
 
-unitCellNum=5
+unitCellNum=10
 
 TStr=format_using_decimal(T)
 #############################################

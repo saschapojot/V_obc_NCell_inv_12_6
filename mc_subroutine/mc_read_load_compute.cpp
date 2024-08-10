@@ -114,11 +114,13 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& xAVec, const st
         size_t loopEnd = loopStart + loopToWrite - 1;
         std::string fileNameMiddle = "loopStart" + std::to_string(loopStart) + "loopEnd" + std::to_string(loopEnd);
 //        std::string out_U_distPickleFileName = this->U_dist_dataDir + "/" + fileNameMiddle + ".U_dist.csv";
-        std::string out_U_distPickleFileName = this->U_dist_dataDir + "/" + fileNameMiddle + ".U_dist.pkl";
+        std::string out_U_distPickleFileName_pkl = this->U_dist_dataDir + "/" + fileNameMiddle + ".U_dist.pkl";
+                std::string out_U_distPickleFileName_csv = this->U_dist_dataDir + "/" + fileNameMiddle + ".U_dist.csv";
 
         //save U_dist_ptr
 //        saveArrayToCSV(U_dist_ptr,varNum * loopToWrite,out_U_distPickleFileName,varNum);
-        save_array_to_pickle(U_dist_ptr.get(),varNum * loopToWrite,out_U_distPickleFileName);
+        save_array_to_pickle(U_dist_ptr.get(),varNum * loopToWrite,out_U_distPickleFileName_pkl);
+        saveLastData2Csv(U_dist_ptr,varNum * loopToWrite,out_U_distPickleFileName_csv,varNum);
         const auto tMCEnd{std::chrono::steady_clock::now()};
         const std::chrono::duration<double> elapsed_secondsAll{tMCEnd - tMCStart};
         std::cout << "loop " + std::to_string(loopStart) + " to loop " + std::to_string(loopEnd) + ": "
@@ -604,5 +606,38 @@ void mc_computation::save_array_to_pickle(double *ptr, std::size_t size, const s
     }
 
 
+
+}
+
+
+void mc_computation::saveLastData2Csv(const std::shared_ptr<double[]>& array, const  int& arraySize, const std::string& filename, const int& numbersPerRow){
+//saves last row to csv
+    std::ofstream outFile(filename);
+
+    if (!outFile.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return;
+    }
+    outFile << std::setprecision(std::numeric_limits<double>::digits10 + 1) << std::fixed;
+    outFile<<"U";
+    for(int i=0;i<N;i++){
+        outFile<<",x"+std::to_string(i)+"A";
+    }
+    for(int i=0;i<N;i++){
+        outFile<<",x"+std::to_string(i)+"B";
+    }
+    outFile<<"\n";
+    for(int i=arraySize-numbersPerRow;i<arraySize;i++){
+        outFile<<array[i];
+        if ((i + 1) % numbersPerRow == 0) {
+            outFile << '\n';
+        } else {
+            outFile << ',';
+        }
+
+
+    }
+//    outFile << '\n';
+    outFile.close();
 
 }
