@@ -279,6 +279,7 @@ xBPathAll=[generate_xBj_path(j) for j in range(0,N)]
 for j in range(0,N):
     xBjPathTmp=xBPathAll[j]
     xAjPathTmp=xAPathAll[j]
+    print("checking xB"+str(j)+"-"+"xA"+str(j))
     sameTmp,lagTmp,pTmp,statTmp,numDataPoints,_,_=check_oneDistDataFilesForOneT(xAjPathTmp,xBjPathTmp,startingFileFraction,startingRowFraction)
     sameVec.append(sameTmp)
     lagVec.append(lagTmp)
@@ -292,6 +293,7 @@ for j in range(0,N):
 for j in range(0,N-1):
     xAjPlus1PathTmp=xAPathAll[j+1]
     xBjPathTmp=xBPathAll[j]
+    print("checking xA"+str(j)+"+1-"+"xB"+str(j))
     sameTmp,lagTmp,pTmp,statTmp,numDataPoints,_,_=check_oneDistDataFilesForOneT(xBjPathTmp,xAjPlus1PathTmp,startingFileFraction,startingRowFraction)
     sameVec.append(sameTmp)
     lagVec.append(lagTmp)
