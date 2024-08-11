@@ -146,7 +146,7 @@ def checkUDataFilesForOneT(UData_dir,startingFileFraction, startingRowFraction):
     # print(startingFileName)
     #read the starting U pkl file
 
-    print(startingFileName)
+    # print(startingFileName)
 
     with open(startingFileName,"rb") as fptr:
         inArrStart=pickle.load(fptr)

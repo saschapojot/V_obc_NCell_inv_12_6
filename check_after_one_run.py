@@ -108,12 +108,12 @@ stdout, stderr = checkU_distProcess.communicate()
 if checkU_distProcess.returncode is not None:
     if checkU_distProcess.returncode < 0:
         # Process was killed by a signal
-        print(f"Process was killed by signal: {-checkU_distProcess.returncode}")
+        print(f"checkU_distProcess was killed by signal: {-checkU_distProcess.returncode}")
     else:
         # Process exited normally
-        print(f"Process exited with return code: {checkU_distProcess.returncode}")
+        print(f"checkU_distProcess exited with return code: {checkU_distProcess.returncode}")
 else:
-    print("Process is still running")
+    print("checkU_distProcess is still running")
 # Print any remaining standard output
 if stdout:
     print(stdout.strip())
