@@ -10,7 +10,7 @@ TVals=[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6]
 rowNum=0
 inParamFileName="./V_inv_12_6Params.csv"
 
-unitCellNum=3
+unitCellNum=10
 
 inDf=pd.read_csv(inParamFileName)
 oneRow=inDf.iloc[rowNum,:]
@@ -75,7 +75,7 @@ def contents_to_conf(k):
         "\n",
         "observable_name=U_dist\n",
         "\n",
-        "effective_data_num_required=15000\n",
+        "effective_data_num_required=4000\n",
         "\n",
         "loop_to_write=10000\n",
         "\n",
