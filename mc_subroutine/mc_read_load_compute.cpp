@@ -641,3 +641,74 @@ void mc_computation::saveLastData2Csv(const std::shared_ptr<double[]>& array, co
     outFile.close();
 
 }
+
+
+
+void mc_computation::save_array_to_pickle_one_column(double *ptr, const int& startingInd, std::size_t size,const int & numbersPerRow, const std::string& filename){
+    using namespace boost::python;
+    try {
+        Py_Initialize();  // Initialize the Python interpreter
+        if (!Py_IsInitialized()) {
+            throw std::runtime_error("Failed to initialize Python interpreter");
+        }
+
+        // Debug output
+        std::cout << "Python interpreter initialized successfully." << std::endl;
+
+        // Import the pickle module
+        object pickle = import("pickle");
+        object pickle_dumps = pickle.attr("dumps");
+
+        // Create a Python list from the C++ array
+        list py_list;
+        for (std::size_t i = startingInd; i < size; i+=numbersPerRow) {
+            py_list.append(ptr[i]);
+        }
+
+        // Serialize the list using pickle.dumps
+        object serialized_array = pickle_dumps(py_list);
+
+        // Extract the serialized data as a string
+        std::string serialized_str = extract<std::string>(serialized_array);
+
+        // Write the serialized data to a file
+        std::ofstream file(filename, std::ios::binary);
+        if (!file) {
+            throw std::runtime_error("Failed to open file for writing");
+        }
+        file.write(serialized_str.data(), serialized_str.size());
+        file.close();
+
+        // Debug output
+        std::cout << "Array serialized and written to file successfully." << std::endl;
+    } catch (const error_already_set&) {
+        PyErr_Print();
+        std::cerr << "Boost.Python error occurred." << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
+
+    if (Py_IsInitialized()) {
+        Py_Finalize();  // Finalize the Python interpreter
+    }
+
+
+
+
+}
+
+
+std::string mc_computation::generate_varName(const int &ind,const int &numbersPerRow){
+
+    if (ind==0){
+        return "U";
+    }
+    else if(ind>=1 and ind<=N){
+        return "xA"+std::to_string(ind);
+    }
+    else{
+        return "xB"+std::to_string(ind);
+    }
+
+
+}

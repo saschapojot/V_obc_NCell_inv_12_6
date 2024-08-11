@@ -322,7 +322,7 @@ public:
 
     void saveLastData2Csv(const std::shared_ptr<double[]>& array, const  int& arraySize, const std::string& filename, const int& numbersPerRow);
 
-
+    std::string generate_varName(const int &ind,const int &numbersPerRow);
     template<class T>
             void print_shared_ptr(const std::shared_ptr<T> &ptr,const int& size){
         if (!ptr) {
@@ -344,7 +344,7 @@ public:
 
     void save_array_to_pickle(double *ptr, std::size_t size, const std::string& filename);
 
-
+    void save_array_to_pickle_one_column(double *ptr, const int& startingInd, std::size_t size,const int & numbersPerRow, const std::string& filename);
 public:
     double T;// temperature
     double beta;

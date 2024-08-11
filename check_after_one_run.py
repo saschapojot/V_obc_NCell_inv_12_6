@@ -86,8 +86,8 @@ else:
 checkU_distErrCode = 5
 # print("entering statistics")
 # Start the subprocess
-print("jsonFromSummary="+json.dumps(jsonFromSummary))
-print("jsonDataFromConf="+json.dumps(jsonDataFromConf))
+# print("jsonFromSummary="+json.dumps(jsonFromSummary))
+# print("jsonDataFromConf="+json.dumps(jsonDataFromConf))
 checkU_distProcess = subprocess.Popen(
     ["python3", "./oneTCheckObservables/check_U_distOneT_pkl.py",
      json.dumps(jsonFromSummary), json.dumps(jsonDataFromConf)],

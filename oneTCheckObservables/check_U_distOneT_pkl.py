@@ -146,16 +146,19 @@ def checkU_distDataFilesForOneT(U_dist_data_dir):
     #read the starting U_dist pkl file
     # in_dfStart=pd.read_csv(startingFileName)
     print(startingFileName)
+    arr=np.array([])
     with open(startingFileName,"rb") as fptr:
         inArrStart=pickle.load(fptr)
-    inArrStart=np.reshape(inArrStart,(-1,2*N+1))
-    in_nRowStart,in_nColStart=inArrStart.shape
+    # inArrStart=np.reshape(inArrStart,(-1,2*N+1))
+    arr=np.append(arr,inArrStart)
+    # in_nRowStart,in_nColStart=inArrStart.shape
+    in_nRowStart=len(inArrStart)
     if startingVecPosition<0:
         #we guess equilibrium starts at this position
         startingVecPosition=int(in_nRowStart/2)
 
-    UVec=inArrStart[startingVecPosition:,0]
-    xAxB_array=inArrStart[startingVecPosition:,1:]
+    # UVec=inArrStart[startingVecPosition:,0]
+    # xAxB_array=inArrStart[startingVecPosition:,1:]
     # print(UVec[:10])
 
     #read the rest of the pkl files
@@ -163,16 +166,18 @@ def checkU_distDataFilesForOneT(U_dist_data_dir):
         print("reading: "+str(pkl_file))
         with open(pkl_file,"rb") as fptr:
             inArr=np.reshape(pickle.load(fptr),(-1,2*N+1))
+        arr=np.append(arr,inArr)
+
+        # in_U=inArr[:,0]
+        # in_xAxB_array=inArr[:,1:]
 
 
-        in_U=inArr[:,0]
-        in_xAxB_array=inArr[:,1:]
+        # UVec=np.r_[UVec,in_U]
+        # xAxB_array=np.r_[xAxB_array,in_xAxB_array]
 
-
-        UVec=np.r_[UVec,in_U]
-        xAxB_array=np.r_[xAxB_array,in_xAxB_array]
-
-
+    arr=np.reshape(arr,(-1,2*N+1))
+    UVec=arr[startingVecPosition:,0]
+    xAxB_array=arr[startingVecPosition:,1:]
     nRow,nCol=xAxB_array.shape
 
     unitCellNum=N
