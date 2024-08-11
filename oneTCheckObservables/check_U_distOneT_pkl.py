@@ -19,6 +19,7 @@ import pickle
 
 argErrCode=2
 sameErrCode=3
+missingErrCode=4
 if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit(argErrCode)
@@ -87,7 +88,7 @@ def auto_corrForOneColumn(colVec):
     same=False
     eps=1e-2
     NLags=int(len(colVec)*1/10)
-    print("NLags="+str(NLags))
+    # print("NLags="+str(NLags))
     with warnings.catch_warnings():
         warnings.filterwarnings("error")
     try:
@@ -125,176 +126,231 @@ def ksTestOneColumn(colVec,lag):
     result=ks_2samp(selectedVecPart0,selectedVecPart1)
     return result.pvalue,result.statistic, lenPart*2
 
-def checkU_distDataFilesForOneT(U_dist_data_dir):
+def checkUDataFilesForOneT(UData_dir,startingFileFraction, startingRowFraction):
     """
 
-    :param U_dist_data_dir:
+    :param UData_dir:
     :return:
     """
-    U_dist_sortedDataFilesToRead=sort_data_files_by_loopEnd(U_dist_data_dir)
-    if len(U_dist_sortedDataFilesToRead)==0:
-        print("no data for U_dist.")
+    U_sortedDataFilesToRead=sort_data_files_by_loopEnd(UData_dir)
+    if len(U_sortedDataFilesToRead)==0:
+        print("no data for U.")
         exit(0)
 
     startingFileInd,startingVecPosition=parseSummaryU_Dist()
 
     if startingFileInd<0:
         #we guess that the equilibrium starts at this file
-        startingFileInd=int(len(U_dist_sortedDataFilesToRead)*5/7)
-    startingFileName=U_dist_sortedDataFilesToRead[startingFileInd]
+        startingFileInd=int(len(U_sortedDataFilesToRead)*startingFileFraction)
+    startingFileName=U_sortedDataFilesToRead[startingFileInd]
     # print(startingFileName)
-    #read the starting U_dist pkl file
-    # in_dfStart=pd.read_csv(startingFileName)
+    #read the starting U pkl file
+
     print(startingFileName)
-    arr=np.array([])
+
     with open(startingFileName,"rb") as fptr:
         inArrStart=pickle.load(fptr)
-    # inArrStart=np.reshape(inArrStart,(-1,2*N+1))
-    arr=np.append(arr,inArrStart)
-    # in_nRowStart,in_nColStart=inArrStart.shape
+
+
+
     in_nRowStart=len(inArrStart)
     if startingVecPosition<0:
         #we guess equilibrium starts at this position
-        startingVecPosition=int(in_nRowStart/2)
+        startingVecPosition=int(in_nRowStart*startingRowFraction)
+    arr=inArrStart[startingVecPosition:]
 
-    # UVec=inArrStart[startingVecPosition:,0]
-    # xAxB_array=inArrStart[startingVecPosition:,1:]
-    # print(UVec[:10])
 
     #read the rest of the pkl files
-    for pkl_file in U_dist_sortedDataFilesToRead[(startingFileInd+1):]:
-        print("reading: "+str(pkl_file))
+    for pkl_file in U_sortedDataFilesToRead[(startingFileInd+1):]:
+        # print("reading: "+str(pkl_file))
         with open(pkl_file,"rb") as fptr:
-            inArr=np.reshape(pickle.load(fptr),(-1,2*N+1))
+            inArr=pickle.load(fptr)
         arr=np.append(arr,inArr)
 
-        # in_U=inArr[:,0]
-        # in_xAxB_array=inArr[:,1:]
+
+    sameUTmp,lagUTmp=auto_corrForOneColumn(arr)
 
 
-        # UVec=np.r_[UVec,in_U]
-        # xAxB_array=np.r_[xAxB_array,in_xAxB_array]
-
-    arr=np.reshape(arr,(-1,2*N+1))
-    UVec=arr[startingVecPosition:,0]
-    xAxB_array=arr[startingVecPosition:,1:]
-    nRow,nCol=xAxB_array.shape
-
-    unitCellNum=N
-    # print(UVec[-10:])
-    xA_array=xAxB_array[:,:unitCellNum]
-    xB_array=xAxB_array[:,unitCellNum:]
-
-    d1_array=np.zeros((nRow,unitCellNum),dtype=float)
-
-    d2_array=np.zeros((nRow,unitCellNum-1),dtype=float)
-
-    for j in range(0,unitCellNum):
-        d1_array[:,j]=xB_array[:,j]-xA_array[:,j]
-    # print("unitCellNum-2="+str(unitCellNum-2))
-    for j in range(0,unitCellNum-1):
-        d2_array[:,j]=xA_array[:,j+1]-xB_array[:,j]
-
-
-    dist_same=[]
-    dist_lags=[]
-
-    sameUTmp,lagUTmp=auto_corrForOneColumn(UVec)
-    dist_same.append(sameUTmp)
-    dist_lags.append(lagUTmp)
-
-    for j in range(0,unitCellNum):
-        sameTmp,lagTmp=auto_corrForOneColumn(d1_array[:,j])
-        dist_same.append(sameTmp)
-        dist_lags.append(lagTmp)
-
-    for j in range(0,unitCellNum-1):
-        sameTmp,lagTmp=auto_corrForOneColumn(d2_array[:,j])
-        dist_same.append(sameTmp)
-        dist_lags.append(lagTmp)
-
-    same_exist=any(dist_same)
-
-    #all values are the same, exit with err code
-    if same_exist==True:
-        with open(summary_U_distFile,"w+") as fptr:
-            msg="error: same\n"
-            fptr.writelines(msg)
-            exit(sameErrCode)
-
-    pThreshHold=0.01
     #if one lag==-1, then the auto-correlation is too large
 
-    if np.min(dist_lags)>0:
-        lagMax=np.max(dist_lags)
-        pValsAll=[]
-        lengthValAll=[]
-        statsValsAll=[]
+    if sameUTmp==True or lagUTmp==-1:
+        return [sameUTmp,lagUTmp,-1,-1,-1]
 
-        pUTmp,statUTmp,lengthUTmp=ksTestOneColumn(UVec,lagMax)
-        pValsAll.append(pUTmp)
-        lengthValAll.append(lengthUTmp)
-        statsValsAll.append(statUTmp)
+    pUTmp,statUTmp,lengthUTmp=ksTestOneColumn(arr,lagUTmp)
+    numDataPoints=lengthUTmp
 
-        for j in range(0,unitCellNum):
-            pTmp,statTmp,lengthTmp=ksTestOneColumn(d1_array[:,j],lagMax)
-            pValsAll.append(pTmp)
-            lengthValAll.append(lengthTmp)
-            statsValsAll.append(statTmp)
+    return [sameUTmp,lagUTmp,pUTmp,statUTmp,numDataPoints,startingFileInd,startingVecPosition]
 
-        for j in range(0,unitCellNum-1):
-            pTmp,statTmp,lengthTmp=ksTestOneColumn(d2_array[:,j],lagMax)
-            pValsAll.append(pTmp)
-            lengthValAll.append(lengthTmp)
-            statsValsAll.append(statTmp)
-        # print(pValsAll)
-        print("stats="+str(statsValsAll))
-        numDataPoints=np.min(lengthValAll)
-        print("pValsAll="+str(pValsAll))
-        if np.min(pValsAll)>=pThreshHold and numDataPoints>=200:
-            if numDataPoints>=effective_data_num_required:
-                newDataPointNum=0
-            else:
-                newDataPointNum=effective_data_num_required-numDataPoints
-            msg="equilibrium\n" \
-                +"lag="+str(lagMax)+"\n" \
-                +"numDataPoints="+str(numDataPoints)+"\n" \
-                +"startingFileInd="+str(startingFileInd)+"\n" \
-                +"startingVecPosition="+str(startingVecPosition)+"\n" \
-                +"newDataPointNum="+str(newDataPointNum)+"\n"
 
-            with open(summary_U_distFile,"w+") as fptr:
-                fptr.writelines(msg)
-            exit(0)
+def check_oneDistDataFilesForOneT(x1Dir, x2Dir,startingFileFraction, startingRowFraction):
+    """
 
-        continueMsg="continue\n"
+    :param x1Dir:
+    :param x2Dir:
+    :param startingFileFraction:
+    :param startingRowFraction:
+    :return:
+    """
+    x1sortedDataFilesToRead=sort_data_files_by_loopEnd(x1Dir)
+    x2sortedDataFilesToRead=sort_data_files_by_loopEnd(x2Dir)
+    if len(x1sortedDataFilesToRead)!= len(x2sortedDataFilesToRead):
+        print("data missing.")
+        exit(missingErrCode)
 
-        if np.min(pValsAll)<pThreshHold:
-            #not the same distribution
+    startingFileInd,startingVecPosition=parseSummaryU_Dist()
 
-            continueMsg+="p value: "+str(np.min(pValsAll))+"\n"
-        if numDataPoints<200:
-            #not enough data number
+    if startingFileInd<0:
+        #we guess that the equilibrium starts at this file
+        startingFileInd=int(len(x1sortedDataFilesToRead)*startingFileFraction)
 
-            continueMsg+="numDataPoints="+str(numDataPoints)+" too low\n"
-            # continueMsg+="lag="+str(lagMax)+"\n"
-        continueMsg+="lag="+str(lagMax)+"\n"
-        with open(summary_U_distFile,"w+") as fptr:
-            fptr.writelines(continueMsg)
-        exit(0)
+    x1StartingFileName=x1sortedDataFilesToRead[startingFileInd]
 
+    with open(x1StartingFileName,"rb") as fptr:
+        x1_inArrStart=pickle.load(fptr)
+
+    in_nRowStart=len(x1_inArrStart)
+    if startingVecPosition<0:
+        #we guess equilibrium starts at this position
+        startingVecPosition=int(in_nRowStart*startingRowFraction)
+
+    x1Arr=x1_inArrStart[startingVecPosition:]
+
+    #read the rest of the x1 pkl files
+    for pkl_file in x1sortedDataFilesToRead[(startingFileInd+1):]:
+        with open(pkl_file,"rb") as fptr:
+            x1_inArr=pickle.load(fptr)
+        x1Arr=np.append(x1Arr,x1_inArr)
+
+
+    x2StartingFileName=x2sortedDataFilesToRead[startingFileInd]
+
+    with open(x2StartingFileName,"rb") as fptr:
+        x2_inArrStart=pickle.load(fptr)
+
+    x2Arr=x2_inArrStart[startingVecPosition:]
+    #read the rest of the x2 pkl files
+    for pkl_file in x2sortedDataFilesToRead[(startingFileInd+1):]:
+        with open(pkl_file,"rb") as fptr:
+            x2_inArr=pickle.load(fptr)
+
+        x2Arr=np.append(x2Arr,x2_inArr)
+
+    distArr=x2Arr-x1Arr
+    # print(distArr[-2])
+    sameTmp,lagTmp=auto_corrForOneColumn(distArr)
+    if sameTmp==True or lagTmp==-1:
+        return [sameTmp,lagTmp,-1,-1,-1]
+
+    pTmp,statTmp,lengthTmp=ksTestOneColumn(distArr,lagTmp)
+    numDataPoints=lengthTmp
+
+    return [sameTmp,lagTmp,pTmp,statTmp,numDataPoints,startingFileInd,startingVecPosition]
+
+startingFileFraction=5/7
+startingRowFraction=1/2
+UDataDir=U_dist_dataDir+"/U/"
+
+
+sameVec=[]
+lagVec=[]
+pVec=[]
+statVec=[]
+numDataVec=[]
+
+sameUTmp,lagUTmp,pUTmp,statUTmp,numDataPointsU,startingFileInd,startingVecPosition=checkUDataFilesForOneT(UDataDir,startingFileFraction,startingRowFraction)
+sameVec.append(sameUTmp)
+lagVec.append(lagUTmp)
+pVec.append(pUTmp)
+statVec.append(statUTmp)
+numDataVec.append(numDataPointsU)
+
+def generate_xAj_path(j):
+    xAjPath=U_dist_dataDir+"/xA"+str(j)+"/"
+    return xAjPath
+
+def generate_xBj_path(j):
+    xBjPath=U_dist_dataDir+"/xB"+str(j)+"/"
+    return xBjPath
+
+xAPathAll=[generate_xAj_path(j) for j in range(0,N)]
+xBPathAll=[generate_xBj_path(j) for j in range(0,N)]
+
+#check xBj - xAj
+for j in range(0,N):
+    xBjPathTmp=xBPathAll[j]
+    xAjPathTmp=xAPathAll[j]
+    sameTmp,lagTmp,pTmp,statTmp,numDataPoints,_,_=check_oneDistDataFilesForOneT(xAjPathTmp,xBjPathTmp,startingFileFraction,startingRowFraction)
+    sameVec.append(sameTmp)
+    lagVec.append(lagTmp)
+    pVec.append(pTmp)
+    statVec.append(statTmp)
+    numDataVec.append(numDataPoints)
+
+
+
+#check xAj+1 - xBj
+for j in range(0,N-1):
+    xAjPlus1PathTmp=xAPathAll[j+1]
+    xBjPathTmp=xBPathAll[j]
+    sameTmp,lagTmp,pTmp,statTmp,numDataPoints,_,_=check_oneDistDataFilesForOneT(xBjPathTmp,xAjPlus1PathTmp,startingFileFraction,startingRowFraction)
+    sameVec.append(sameTmp)
+    lagVec.append(lagTmp)
+    pVec.append(pTmp)
+    statVec.append(statTmp)
+    numDataVec.append(numDataPoints)
+
+
+
+summary_U_distFile=TDirRoot+"/summary_U_dist.txt"
+
+
+if np.min(lagVec)<0:
+    msg="high correlation"
+    with open(summary_U_distFile,"w+") as fptr:
+        fptr.writelines(msg)
+    exit(0)
+
+same_exist=any(sameVec)
+if same_exist==True:
+    with open(summary_U_distFile,"w+") as fptr:
+        msg="error: same\n"
+        fptr.writelines(msg)
+        exit(sameErrCode)
+
+#equilibrium
+pThreshHold=0.01
+lagMax=np.max(lagVec)
+print("statVec="+str(statVec))
+print("pVec="+str(pVec))
+
+numDataPoints=np.min(numDataVec)
+if np.min(pVec)>=pThreshHold and numDataPoints>=200:
+    if numDataPoints>=effective_data_num_required:
+        newDataPointNum=0
     else:
-        msg="high correlation"
-        with open(summary_U_distFile,"w+") as fptr:
-            fptr.writelines(msg)
-        exit(0)
+        newDataPointNum=effective_data_num_required-numDataPoints
+    msg="equilibrium\n" \
+        +"lag="+str(lagMax)+"\n" \
+        +"numDataPoints="+str(numDataPoints)+"\n" \
+        +"startingFileInd="+str(startingFileInd)+"\n" \
+        +"startingVecPosition="+str(startingVecPosition)+"\n" \
+        +"newDataPointNum="+str(newDataPointNum)+"\n"
 
+    with open(summary_U_distFile,"w+") as fptr:
+        fptr.writelines(msg)
+    exit(0)
 
+#continue
+continueMsg="continue\n"
+if np.min(pVec)<pThreshHold:
+    #not the same distribution
+    continueMsg+="p value: "+str(np.min(pVec))+"\n"
+if numDataPoints<200:
+    #not enough data number
 
+    continueMsg+="numDataPoints="+str(numDataPoints)+" too low\n"
+    continueMsg+="lag="+str(lagMax)+"\n"
+with open(summary_U_distFile,"w+") as fptr:
+    fptr.writelines(continueMsg)
+exit(0)
 
-
-
-
-
-
-checkU_distDataFilesForOneT(U_dist_dataDir)

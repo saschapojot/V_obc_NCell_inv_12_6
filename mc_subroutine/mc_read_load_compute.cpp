@@ -119,8 +119,21 @@ void mc_computation::execute_mc(const std::shared_ptr<double[]>& xAVec, const st
 
         //save U_dist_ptr
 //        saveArrayToCSV(U_dist_ptr,varNum * loopToWrite,out_U_distPickleFileName,varNum);
-        save_array_to_pickle(U_dist_ptr.get(),varNum * loopToWrite,out_U_distPickleFileName_pkl);
+//        save_array_to_pickle(U_dist_ptr.get(),varNum * loopToWrite,out_U_distPickleFileName_pkl);
         saveLastData2Csv(U_dist_ptr,varNum * loopToWrite,out_U_distPickleFileName_csv,varNum);
+        for(int startingInd=0;startingInd<varNum;startingInd++){
+
+            std::string varName= generate_varName(startingInd,varNum);
+            std::string outVarPath=this->U_dist_dataDir + "/"+varName+"/";
+            if (!fs::is_directory(outVarPath) || !fs::exists(outVarPath)) {
+                fs::create_directories(outVarPath);
+            }
+            std::string outVarFile=outVarPath+"/"+fileNameMiddle+"."+varName+".pkl";
+            save_array_to_pickle_one_column(U_dist_ptr.get(),startingInd,varNum * loopToWrite,varNum,outVarFile);
+
+
+
+        }
         const auto tMCEnd{std::chrono::steady_clock::now()};
         const std::chrono::duration<double> elapsed_secondsAll{tMCEnd - tMCStart};
         std::cout << "loop " + std::to_string(loopStart) + " to loop " + std::to_string(loopEnd) + ": "
@@ -653,7 +666,7 @@ void mc_computation::save_array_to_pickle_one_column(double *ptr, const int& sta
         }
 
         // Debug output
-        std::cout << "Python interpreter initialized successfully." << std::endl;
+//        std::cout << "Python interpreter initialized successfully." << std::endl;
 
         // Import the pickle module
         object pickle = import("pickle");
@@ -680,7 +693,7 @@ void mc_computation::save_array_to_pickle_one_column(double *ptr, const int& sta
         file.close();
 
         // Debug output
-        std::cout << "Array serialized and written to file successfully." << std::endl;
+//        std::cout << "Array serialized and written to file successfully." << std::endl;
     } catch (const error_already_set&) {
         PyErr_Print();
         std::cerr << "Boost.Python error occurred." << std::endl;
@@ -704,10 +717,10 @@ std::string mc_computation::generate_varName(const int &ind,const int &numbersPe
         return "U";
     }
     else if(ind>=1 and ind<=N){
-        return "xA"+std::to_string(ind);
+        return "xA"+std::to_string(ind-1);
     }
     else{
-        return "xB"+std::to_string(ind);
+        return "xB"+std::to_string(ind-N-1);
     }
 
 
