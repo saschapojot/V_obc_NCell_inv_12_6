@@ -365,9 +365,13 @@ plt.close()
 #plot d1, d2 using lattice
 
 d1d2InterleavedArray=[]
+# print(d1MeanVecsAll)
+# print(d2MeanVecsAll)
 for n in range(0,len(d1MeanVecsAll)):
     d1VecOneTemp=d1MeanVecsAll[n]
     d2VecOneTemp=d2MeanVecsAll[n]
+    # d1VecOneTemp=np.abs(d1VecOneTemp)
+    # d2VecOneTemp=np.abs(d2VecOneTemp)
     rst=[]
     for i ,(x,y) in enumerate(zip(d1VecOneTemp,d2VecOneTemp)):
         rst.append(x)

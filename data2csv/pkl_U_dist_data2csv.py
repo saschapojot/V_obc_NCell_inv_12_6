@@ -7,17 +7,17 @@ import os
 import json
 from pathlib import Path
 import pandas as pd
+import pickle
+#this script extracts effective data from pkl files
 
-#this script extracts effective data
-
-if (len(sys.argv)!=2):
+if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit()
 
 
 rowNum=int(sys.argv[1])
 
-unitCellNum=5
+unitCellNum=int(sys.argv[2])
 rowDirRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/"
 obs_U_dist="U_dist"
 
@@ -71,7 +71,7 @@ def parseSummary(oneTFolder,obs_name):
 
 
 
-def sort_data_files_by_lpEnd(oneTFolder,obs_name):
+def sort_data_files_by_lpEnd(oneTFolder,obs_name,varName):
     """
 
     :param oneTFolder: Txxx
@@ -79,11 +79,11 @@ def sort_data_files_by_lpEnd(oneTFolder,obs_name):
     :return:
     """
 
-    dataFolderName=oneTFolder+"/"+obs_name+"_dataFiles/"
+    dataFolderName=oneTFolder+"/"+obs_name+"_dataFiles/"+varName+"/"
     dataFilesAll=[]
     loopEndAll=[]
 
-    for oneDataFile in glob.glob(dataFolderName+"/*.csv"):
+    for oneDataFile in glob.glob(dataFolderName+"/*.pkl"):
         dataFilesAll.append(oneDataFile)
         matchEnd=re.search(r"loopEnd(\d+)",oneDataFile)
         if matchEnd:
@@ -98,31 +98,73 @@ def sort_data_files_by_lpEnd(oneTFolder,obs_name):
 
 def U_dist_data2csvForOneT(oneTFolder,oneTStr,startingFileInd,startingVecPosition,lag):
     TRoot=oneTFolder
-    sortedDataFilesToRead=sort_data_files_by_lpEnd(TRoot,obs_U_dist)
-    startingFileName=sortedDataFilesToRead[startingFileInd]
-    # print("startingFileInd="+str(startingFileInd))
-    # print("startingVecPosition="+str(startingVecPosition))
-    #read the starting U_dist csv file
-    in_dfStart=pd.read_csv(startingFileName)
+    sortedUDataFilesToRead=sort_data_files_by_lpEnd(TRoot,obs_U_dist,"U")
+    startingUFileName=sortedUDataFilesToRead[startingFileInd]
 
-    dataArray=np.array(in_dfStart,dtype=float)[startingVecPosition:,:]
+    with open(startingUFileName,"rb") as fptr:
+        inUStart=pickle.load(fptr)
+    # print(len(sortedUDataFilesToRead))
+    # print(startingUFileName)
+    UVec=inUStart[startingVecPosition:]
+    for pkl_file in sortedUDataFilesToRead[(startingFileInd+1):]:
+        with open(pkl_file,"rb") as fptr:
+            in_UArr=pickle.load(fptr)
+            UVec=np.append(UVec,in_UArr)
 
-    #read the rest of the csv files
-    for csv_file in sortedDataFilesToRead[(startingFileInd+1):]:
-        in_df=pd.read_csv(csv_file)
-        dataArray=np.r_[dataArray,in_df]
+    UVecSelected=UVec[::lag]
+    # print("len(UVecSelected)="+str(len(UVecSelected)))
+    dataArraySelected=UVecSelected
+    #extract xA
+    for j in range(0,unitCellNum):
+        varName="xA"+str(j)
+        sorted_xADataFilesToRead=sort_data_files_by_lpEnd(TRoot,obs_U_dist,varName)
+        starting_xAFileName=sorted_xADataFilesToRead[startingFileInd]
+        # print(len(sorted_xADataFilesToRead))
+        # print(starting_xAFileName)
+        with open(starting_xAFileName,"rb") as fptr:
+            in_xAjStart=pickle.load(fptr)
 
-    dataArraySelected=dataArray[::lag,:]
+        xAjVec=in_xAjStart[startingVecPosition:]
+        for pkl_file in sorted_xADataFilesToRead[(startingFileInd+1):]:
+            with open(pkl_file,"rb") as fptr:
+                in_xAjArr=pickle.load(fptr)
+                xAjVec=np.append(xAjVec,in_xAjArr)
+        xAjVecSelected=xAjVec[::lag]
+        # print("len(xAjVecSelected)="+str(len(xAjVecSelected)))
+        dataArraySelected=np.vstack((dataArraySelected,xAjVecSelected))
+
+    #extract xB
+    for j in range(0,unitCellNum):
+        varName="xB"+str(j)
+        sorted_xBDataFilesToRead=sort_data_files_by_lpEnd(TRoot,obs_U_dist,varName)
+        starting_xBFileName=sorted_xBDataFilesToRead[startingFileInd]
+        with open(starting_xBFileName,"rb") as fptr:
+            in_xBjStart=pickle.load(fptr)
+        xBjVec=in_xBjStart[startingVecPosition:]
+        for pkl_file in sorted_xBDataFilesToRead[(startingFileInd+1):]:
+            with open(pkl_file,"rb") as fptr:
+                in_xBjArr=pickle.load(fptr)
+                xBjVec=np.append(xBjVec,in_xAjArr)
+
+        xBjVecSelected=xBjVec[::lag]
+        dataArraySelected=np.vstack((dataArraySelected,xBjVecSelected))
+
+    colNamesAll=["U"]
+    for j in range(0,unitCellNum):
+        colNamesAll.append("xA"+str(j))
+    for j in range(0,unitCellNum):
+        colNamesAll.append("xB"+str(j))
+    # col_names=",".join(colNamesAll)
 
     outCsvDataRoot=rowDirRoot+"/csvOutAll/"
     outCsvFolder=outCsvDataRoot+"/"+oneTStr+"/"+obs_U_dist+"/"
     Path(outCsvFolder).mkdir(parents=True, exist_ok=True)
     outCsvFile=outCsvFolder+"/"+obs_U_dist+"Data.csv"
-
-    col_names = in_dfStart.columns
-
-    dfToSave=pd.DataFrame(dataArraySelected,columns=col_names)
+    dfToSave=pd.DataFrame(dataArraySelected.T,columns=colNamesAll)
     dfToSave.to_csv(outCsvFile,index=False)
+
+
+
 
 
 for k in range(0,len(sortedTFiles)):
@@ -138,3 +180,5 @@ for k in range(0,len(sortedTFiles)):
     U_dist_data2csvForOneT(oneTFolder,oneTStr,startingfileIndTmp,startingVecIndTmp,lagTmp)
     tEnd=datetime.now()
     print("processed T="+str(sortedTVals[k])+": ",tEnd-tStart)
+
+

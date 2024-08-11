@@ -11,6 +11,7 @@ if (len(sys.argv)!=2):
 
 
 confFileName=str(sys.argv[1])
+# print("confFileName is "+confFileName)
 invalidValueErrCode=1
 summaryErrCode=2
 loadErrCode=3
@@ -25,7 +26,6 @@ if confResult.returncode !=0:
     print("Error running parseConf.py with code "+str(confResult.returncode))
     # print(confResult.stderr)
     exit(confErrCode)
-
 
 
 match_confJson=re.match(r"jsonDataFromConf=(.+)$",confJsonStr2stdout)
@@ -89,10 +89,13 @@ checkU_distErrCode = 5
 # print("jsonFromSummary="+json.dumps(jsonFromSummary))
 # print("jsonDataFromConf="+json.dumps(jsonDataFromConf))
 checkU_distProcess = subprocess.Popen(
-    ["python3", "./oneTCheckObservables/check_U_distOneT_pkl.py",
+    ["python3", "-u", "./oneTCheckObservables/check_U_distOneT_pkl.py",
      json.dumps(jsonFromSummary), json.dumps(jsonDataFromConf)],
     stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
 )
+# return_code = checkU_distProcess.poll()
+# if return_code is not None:
+#     print(f"Process exited immediately with return code: {return_code}")
 
 # Read output in real-time
 while True:

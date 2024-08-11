@@ -27,10 +27,7 @@ if (len(sys.argv)!=3):
 # print("entering")
 jsonFromSummaryLast=json.loads(sys.argv[1])
 jsonDataFromConf=json.loads(sys.argv[2])
-# jsonFromSummaryLast={"startingFileInd": "74", "startingVecPosition": "500000", "newMcStepNum": "78940680", "newDataPointNum": "10920", "newFlushNum": "79", "TDirRoot": "./dataAllUnitCell10/row0/T0.5/", "U_dist_dataDir": "./dataAllUnitCell10/row0/T0.5//U_dist_dataFiles/"}
-
-# jsonDataFromConf={"T": "0.5", "erase_data_if_exist": "False", "search_and_read_summary_file": "True", "observable_name": "U_dist", "potential_function_name": "V_inv_12_6", "effective_data_num_required": "15000", "loop_to_write": "1000000", "default_flush_num": "10", "coefs": "25,80,15,67", "confFileName": "./dataAllUnitCell10/row0/T0.5/run_T0.5.mc.conf", "unitCellNum": "10"}
-
+# print(jsonFromSummaryLast)
 
 TDirRoot=jsonFromSummaryLast["TDirRoot"]
 U_dist_dataDir=jsonFromSummaryLast["U_dist_dataDir"]
@@ -43,6 +40,7 @@ summary_U_distFile=TDirRoot+"/summary_U_dist.txt"
 def sort_data_files_by_loopEnd(oneDir):
     dataFilesAll=[]
     loopEndAll=[]
+    # print("entering sort")
     for oneDataFile in glob.glob(oneDir+"/*.pkl"):
         # print(oneDataFile)
         dataFilesAll.append(oneDataFile)
@@ -174,7 +172,7 @@ def checkUDataFilesForOneT(UData_dir,startingFileFraction, startingRowFraction):
     #if one lag==-1, then the auto-correlation is too large
 
     if sameUTmp==True or lagUTmp==-1:
-        return [sameUTmp,lagUTmp,-1,-1,-1]
+        return [sameUTmp,lagUTmp,-1,-1,-1,-1,-1]
 
     pUTmp,statUTmp,lengthUTmp=ksTestOneColumn(arr,lagUTmp)
     numDataPoints=lengthUTmp
@@ -239,7 +237,7 @@ def check_oneDistDataFilesForOneT(x1Dir, x2Dir,startingFileFraction, startingRow
     # print(distArr[-2])
     sameTmp,lagTmp=auto_corrForOneColumn(distArr)
     if sameTmp==True or lagTmp==-1:
-        return [sameTmp,lagTmp,-1,-1,-1]
+        return [sameTmp,lagTmp,-1,-1,-1,-1,-1,-1]
 
     pTmp,statTmp,lengthTmp=ksTestOneColumn(distArr,lagTmp)
     numDataPoints=lengthTmp
@@ -256,7 +254,7 @@ lagVec=[]
 pVec=[]
 statVec=[]
 numDataVec=[]
-
+# print("before ")
 sameUTmp,lagUTmp,pUTmp,statUTmp,numDataPointsU,startingFileInd,startingVecPosition=checkUDataFilesForOneT(UDataDir,startingFileFraction,startingRowFraction)
 sameVec.append(sameUTmp)
 lagVec.append(lagUTmp)
@@ -293,7 +291,7 @@ for j in range(0,N):
 for j in range(0,N-1):
     xAjPlus1PathTmp=xAPathAll[j+1]
     xBjPathTmp=xBPathAll[j]
-    print("checking xA"+str(j)+"+1-"+"xB"+str(j))
+    print("checking xA"+str(j+1)+"-"+"xB"+str(j))
     sameTmp,lagTmp,pTmp,statTmp,numDataPoints,_,_=check_oneDistDataFilesForOneT(xBjPathTmp,xAjPlus1PathTmp,startingFileFraction,startingRowFraction)
     sameVec.append(sameTmp)
     lagVec.append(lagTmp)
