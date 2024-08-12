@@ -77,7 +77,7 @@ def contents_to_conf(k):
         "\n",
         "effective_data_num_required=4000\n",
         "\n",
-        "loop_to_write=10000\n",
+        "loop_to_write=1000000\n",
         "\n",
         "#within each flush,  loop_to_write mc computations are executed\n",
         "\n",
