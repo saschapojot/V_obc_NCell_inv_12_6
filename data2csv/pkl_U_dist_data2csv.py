@@ -144,9 +144,10 @@ def U_dist_data2csvForOneT(oneTFolder,oneTStr,startingFileInd,startingVecPositio
         for pkl_file in sorted_xBDataFilesToRead[(startingFileInd+1):]:
             with open(pkl_file,"rb") as fptr:
                 in_xBjArr=pickle.load(fptr)
-                xBjVec=np.append(xBjVec,in_xAjArr)
+                xBjVec=np.append(xBjVec,in_xBjArr)
 
         xBjVecSelected=xBjVec[::lag]
+        # print("len(xBjVecSelected)="+str(len(xBjVecSelected)))
         dataArraySelected=np.vstack((dataArraySelected,xBjVecSelected))
 
     colNamesAll=["U"]

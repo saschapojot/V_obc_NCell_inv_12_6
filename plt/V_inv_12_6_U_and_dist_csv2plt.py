@@ -78,7 +78,7 @@ def pltU_dist(oneTFile):
     yPosUText=np.max(n0)*2/3
     axU.text(xPosUText,yPosUText,"mean="+meanUStr+"\nsd="+sigmaUStr)
     plt.axvline(x=meanU,color="red",label="mean")
-    axU.text(meanU*1.1,0.5*np.max(n0),str(meanU)+"$\pm$"+str(sigmaU),color="red")
+    axU.text(meanU*1.1,0.5*np.max(n0),str(meanU)+"$\\pm$"+str(sigmaU),color="red")
     axU.hlines(y=0,xmin=meanU-sigmaU,xmax=meanU+sigmaU,color="green",linewidth=15)
 
     plt.legend(loc="best")

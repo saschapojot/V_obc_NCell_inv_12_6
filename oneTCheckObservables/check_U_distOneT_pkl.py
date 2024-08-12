@@ -237,7 +237,7 @@ def check_oneDistDataFilesForOneT(x1Dir, x2Dir,startingFileFraction, startingRow
     # print(distArr[-2])
     sameTmp,lagTmp=auto_corrForOneColumn(distArr)
     if sameTmp==True or lagTmp==-1:
-        return [sameTmp,lagTmp,-1,-1,-1,-1,-1,-1]
+        return [sameTmp,lagTmp,-1,-1,-1,-1,-1]
 
     pTmp,statTmp,lengthTmp=ksTestOneColumn(distArr,lagTmp)
     numDataPoints=lengthTmp
