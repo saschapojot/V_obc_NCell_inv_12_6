@@ -4,17 +4,17 @@ import pandas as pd
 
 #this script prints part of an array
 
-inFile="./dataAllUnitCell10/row0/T0.5/U_dist_dataFiles/loopStart182000000loopEnd182999999.U_dist.pkl"
+inFile="./dataAllUnitCell20/row0/T1/U_dist_dataFiles/U/loopStart9000000loopEnd9999999.U.pkl"
 N=10
 
 with open(inFile,"rb") as fptr:
     arr=pickle.load(fptr)
 
-arr=np.reshape(arr,(-1,2*N+1))
+# arr=np.reshape(arr,(-1,2*N+1))
 
 outCsvName="./show.csv"
 
-part=arr[-20:,:]
+part=arr
 
 df=pd.DataFrame(part)
 
