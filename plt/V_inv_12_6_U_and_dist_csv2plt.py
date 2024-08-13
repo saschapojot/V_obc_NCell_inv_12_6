@@ -11,11 +11,11 @@ import pandas as pd
 
 #This script loads csv data and plot
 
-if (len(sys.argv)!=3):
+if (len(sys.argv)!=2):
     print("wrong number of arguments")
     exit()
-rowNum=int(sys.argv[1])
-unitCellNum=int(sys.argv[2])
+rowNum=0#int(sys.argv[1])
+unitCellNum=int(sys.argv[1])
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"
 
@@ -391,7 +391,7 @@ for i,(x,y) in enumerate(zip(xANames,xBNames)):
     xNames.append(x)
     xNames.append(y)
 xNames.extend(xANames[len(xBNames):])
-fig,axes=plt.subplots(len(sortedTVals),1,figsize=(20,10))
+fig,axes=plt.subplots(len(sortedTVals),1,figsize=(30,10))
 for n in  range(0,len(sortedTVals)):
     positionOneTemp=positions[n,:]
     for i , pos in enumerate(positionOneTemp):

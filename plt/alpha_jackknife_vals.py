@@ -10,11 +10,11 @@ import scipy.stats as stats
 
 #This script loads csv data and plot alpha, with condidence interval
 
-if (len(sys.argv)!=3):
+if (len(sys.argv)!=2):
     print("wrong number of arguments")
     exit()
-rowNum=int(sys.argv[1])
-unitCellNum=int(sys.argv[2])
+rowNum=0#int(sys.argv[1])
+unitCellNum=int(sys.argv[1])
 
 
 csvDataFolderRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/csvOutAll/"

@@ -181,8 +181,8 @@ public:
                 iss>>h;
                 paramCounter++;
                 std::cout << "h=" << h << std::endl;
-//                this->M = std::pow(2.0 * PI, 0.5) * h * 1.001;
-//                std::cout<<"M="<<M<<std::endl;
+                this->M = std::pow(2.0 * PI, 0.5) * h * 1.001;
+                std::cout<<"M="<<M<<std::endl;
                 continue;
             }
 
