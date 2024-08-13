@@ -35,7 +35,7 @@ UInit=6
 # y0Init=1
 # z0Init=1
 # y1Init=1
-coordsAll=list(range(1,2*N+1))
+coordsAll=np.array(list(range(1,2*N+1)))*0.77
 xA=coordsAll[0::2]
 xB=coordsAll[1::2]
 

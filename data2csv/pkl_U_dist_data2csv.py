@@ -10,14 +10,14 @@ import pandas as pd
 import pickle
 #this script extracts effective data from pkl files
 
-if (len(sys.argv)!=3):
+if (len(sys.argv)!=2):
     print("wrong number of arguments")
     exit()
 
 
-rowNum=int(sys.argv[1])
-
-unitCellNum=int(sys.argv[2])
+# rowNum=int(sys.argv[1])
+rowNum=0
+unitCellNum=int(sys.argv[1])
 rowDirRoot="../dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/"
 obs_U_dist="U_dist"
 
@@ -108,6 +108,7 @@ def U_dist_data2csvForOneT(oneTFolder,oneTStr,startingFileInd,startingVecPositio
     UVec=inUStart[startingVecPosition:]
     for pkl_file in sortedUDataFilesToRead[(startingFileInd+1):]:
         with open(pkl_file,"rb") as fptr:
+            # print(pkl_file)
             in_UArr=pickle.load(fptr)
             UVec=np.append(UVec,in_UArr)
 

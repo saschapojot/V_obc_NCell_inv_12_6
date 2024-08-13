@@ -4,10 +4,66 @@ import pandas as pd
 import statsmodels.api as sm
 import warnings
 import matplotlib.pyplot as plt
+import glob
+import re
+from decimal import Decimal
 #this script prints part of an array
 
-inFile1="./dataAllUnitCell14/row0/T0.5/U_dist_dataFiles/xB6/loopStart9000000loopEnd9999999.xB6.pkl"
-inFile2="./dataAllUnitCell14/row0/T0.5/U_dist_dataFiles/xA6/loopStart9000000loopEnd9999999.xA6.pkl"
+
+
+def format_using_decimal(value):
+    # Convert the float to a Decimal
+    decimal_value = Decimal(value)
+    # Remove trailing zeros and ensure fixed-point notation
+    formatted_value = decimal_value.quantize(Decimal(1)) if decimal_value == decimal_value.to_integral() else decimal_value.normalize()
+    return str(formatted_value)
+def sort_data_files_by_lpEnd(oneDataFolder):
+    """
+
+    :param oneDataFolder:
+    :return:
+    """
+
+
+    dataFolderName=oneDataFolder
+    dataFilesAll=[]
+    loopEndAll=[]
+
+    for oneDataFile in glob.glob(dataFolderName+"/*.pkl"):
+        dataFilesAll.append(oneDataFile)
+        matchEnd=re.search(r"loopEnd(\d+)",oneDataFile)
+        if matchEnd:
+            loopEndAll.append(int(matchEnd.group(1)))
+
+
+    endInds=np.argsort(loopEndAll)
+    # loopStartSorted=[loopStartAll[i] for i in startInds]
+    sortedDataFiles=[dataFilesAll[i] for i in endInds]
+
+    return sortedDataFiles
+
+
+cellInd=13
+unitCellNum=20
+T=0.5
+TStr=format_using_decimal(T)
+dataRoot="./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/U_dist_dataFiles/"
+
+print(dataRoot)
+in_xAPath=dataRoot+"/xA"+str(cellInd)+"/"
+
+in_xBPath=dataRoot+"/xB"+str(cellInd)+"/"
+
+inUPath=dataRoot+"/U/"
+
+sorted_inUFiles=sort_data_files_by_lpEnd(inUPath)
+sorted_in_xAFiles=sort_data_files_by_lpEnd(in_xAPath)
+sorted_in_xBFiles=sort_data_files_by_lpEnd(in_xBPath)
+
+fileInd=0
+inFile1=sorted_in_xAFiles[fileInd]
+inFile2=sorted_in_xBFiles[fileInd]
+inFileU=sorted_inUFiles[fileInd]
 
 with open(inFile1,"rb") as fptr:
     arr1=pickle.load(fptr)
@@ -16,6 +72,18 @@ with open(inFile2,"rb") as fptr:
     arr2=pickle.load(fptr)
 arr2=np.array(arr2)
 # arr=np.reshape(arr,(-1,2*N+1))
+
+inParamFileName="./V_inv_12_6Params.csv"
+rowNum=0
+inDf=pd.read_csv(inParamFileName)
+oneRow=inDf.iloc[rowNum,:]
+a1=float(oneRow.loc["a1"])
+b1=float(oneRow.loc["b1"])
+a2=float(oneRow.loc["a2"])
+b2=float(oneRow.loc["b2"])
+
+def V1(r):
+    return a1*r**(-12)-b1*r**(-6)
 def auto_corrForOneColumn(colVec):
     """
 
@@ -49,9 +117,42 @@ auto_corrForOneColumn(arr)
 outCsvName="./show.csv"
 
 part=arr
-
+V1Part=[V1(r) for r in part]
+V1Part=np.array(V1Part)
+V1Increment=V1Part[1:]-V1Part[:-1]
+sortedV1Incre=np.sort(V1Increment)
+# print(len(sortedV1Incre))
 df=pd.DataFrame(part)
 
 df.to_csv(outCsvName,index=False,header=None)
-plt.scatter(range(0,len(arr)),arr,s=0.1)
+plt.figure()
+plt.scatter(range(0,len(part)),part,s=1)
+plt.title("dist")
 plt.savefig("dist.png")
+plt.close()
+
+plt.figure()
+plt.scatter(range(0,len(V1Part)),V1Part,s=1)
+plt.title("U")
+plt.savefig("U.png")
+plt.close()
+
+plt.figure()
+plt.scatter(range(0,len(V1Increment)),V1Increment,s=1)
+plt.title("V1 Increment")
+plt.savefig("V1Inc.png")
+plt.close()
+
+
+
+with open(inFileU,"rb") as fptr:
+    UVec=np.array(pickle.load(fptr))
+UPart=UVec[:1000]
+UDiff=UPart[1:]-UPart[:-1]
+
+plt.figure()
+plt.scatter(range(0,len(UPart)),UPart,s=1)
+plt.title("UAll")
+
+plt.savefig("UAll.png")
+plt.close()

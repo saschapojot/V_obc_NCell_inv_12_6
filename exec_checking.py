@@ -4,8 +4,8 @@ from decimal import Decimal
 import sys
 #this scrip executes mc by checking statistics
 def format_using_decimal(value):
-    # Convert the float to a Decimal
-    decimal_value = Decimal(value)
+    # Convert the float to a Decimal using string conversion to avoid precision issues
+    decimal_value = Decimal(str(value))
     # Remove trailing zeros and ensure fixed-point notation
     formatted_value = decimal_value.quantize(Decimal(1)) if decimal_value == decimal_value.to_integral() else decimal_value.normalize()
     return str(formatted_value)
@@ -23,6 +23,7 @@ unitCellNum=int(sys.argv[2])
 
 
 TStr=format_using_decimal(T)
+print("TStr="+TStr)
 #############################################
 #launch mc, i.e., giving initial conditions
 
