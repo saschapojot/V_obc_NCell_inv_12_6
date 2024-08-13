@@ -5,7 +5,7 @@ import pandas as pd
 #this script prints part of an array
 
 
-inFile="./dataAllUnitCell20/row0/T1/U_dist_dataFiles/U/loopStart9000000loopEnd9999999.U.pkl"
+inFile="./dataAllUnitCell20/row0/T1/U_dist_dataFiles/U/loopStart60000000loopEnd60999999.U.pkl"
 N=10
 
 with open(inFile,"rb") as fptr:

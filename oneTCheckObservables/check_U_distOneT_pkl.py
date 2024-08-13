@@ -85,7 +85,7 @@ def auto_corrForOneColumn(colVec):
     """
     same=False
     eps=5e-2
-    NLags=int(len(colVec)*1/10)
+    NLags=int(len(colVec)*1/4)
     # print("NLags="+str(NLags))
     with warnings.catch_warnings():
         warnings.filterwarnings("error")
@@ -273,6 +273,16 @@ def generate_xBj_path(j):
 xAPathAll=[generate_xAj_path(j) for j in range(0,N)]
 xBPathAll=[generate_xBj_path(j) for j in range(0,N)]
 
+#checking L
+# xBPathLast=xBPathAll[-1]
+# xAPath0=xAPathAll[0]
+# sameTmp,lagTmp,pTmp,statTmp,numDataPoints,_,_=check_oneDistDataFilesForOneT(xAPath0,xBPathLast,startingFileFraction,startingRowFraction)
+# print("lagTmp="+str(lagTmp))
+# sameVec.append(sameTmp)
+# lagVec.append(lagTmp)
+# pVec.append(pTmp)
+# statVec.append(statTmp)
+# numDataVec.append(numDataPoints)
 #check xBj - xAj
 for j in range(0,N):
     xBjPathTmp=xBPathAll[j]
@@ -320,13 +330,14 @@ if same_exist==True:
         exit(sameErrCode)
 
 #equilibrium
-pThreshHold=0.01
+# pThreshHold=0.01
 lagMax=np.max(lagVec)
+statThreshhold=0.1
 print("statVec="+str(statVec))
 print("pVec="+str(pVec))
 
 numDataPoints=np.min(numDataVec)
-if np.min(pVec)>=pThreshHold and numDataPoints>=200:
+if np.max(statVec)<=statThreshhold and numDataPoints>=200:
     if numDataPoints>=effective_data_num_required:
         newDataPointNum=0
     else:
@@ -344,9 +355,10 @@ if np.min(pVec)>=pThreshHold and numDataPoints>=200:
 
 #continue
 continueMsg="continue\n"
-if np.min(pVec)<pThreshHold:
+if np.max(statVec)>statThreshhold:
     #not the same distribution
-    continueMsg+="p value: "+str(np.min(pVec))+"\n"
+    continueMsg+="stat value: "+str(np.max(statVec))+"\n"
+
 if numDataPoints<200:
     #not enough data number
 

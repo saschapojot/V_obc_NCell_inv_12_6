@@ -1,16 +1,18 @@
 from pathlib import Path
 from decimal import Decimal
+
+import numpy as np
 import pandas as pd
 
 
 #This script creates directories and conf files for mc
 
-TVals=[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6]
+
 
 rowNum=0
 inParamFileName="./V_inv_12_6Params.csv"
 
-unitCellNum=10
+
 
 inDf=pd.read_csv(inParamFileName)
 oneRow=inDf.iloc[rowNum,:]
@@ -20,14 +22,17 @@ a2=float(oneRow.loc["a2"])
 b2=float(oneRow.loc["b2"])
 
 
-dataRoot="./dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/"
 
 def format_using_decimal(value):
     # Convert the float to a Decimal
+    value=np.round(value,4)
     decimal_value = Decimal(value)
     # Remove trailing zeros and ensure fixed-point notation
     formatted_value = decimal_value.quantize(Decimal(1)) if decimal_value == decimal_value.to_integral() else decimal_value.normalize()
     return str(formatted_value)
+TVals=[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6]
+unitCellNum=50
+dataRoot="./dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/"
 
 TDirsAll=[]
 TStrAll=[]
@@ -35,7 +40,8 @@ TStrAll=[]
 for k in range(0,len(TVals)):
     T=TVals[k]
     # print(T)
-    TStr=format_using_decimal(T)
+
+    TStr=str(T)#format_using_decimal(T)
     TStrAll.append(TStr)
     TDir=dataRoot+"/T"+TStr+"/"
     TDirsAll.append(TDir)
@@ -75,15 +81,15 @@ def contents_to_conf(k):
         "\n",
         "observable_name=U_dist\n",
         "\n",
-        "effective_data_num_required=4000\n",
+        "effective_data_num_required=1000\n",
         "\n",
-        "loop_to_write=10000gf\n",
+        "loop_to_write=1000000\n",
         "\n",
         "#within each flush,  loop_to_write mc computations are executed\n",
         "\n",
         "default_flush_num=10\n",
         "\n",
-        "h=0.005\n"
+        "h=0.0025\n"
 
 
 

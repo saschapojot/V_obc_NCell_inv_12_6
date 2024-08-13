@@ -43,8 +43,8 @@ def sort_data_files_by_lpEnd(oneDataFolder):
     return sortedDataFiles
 
 
-cellInd=13
-unitCellNum=20
+cellInd=0
+unitCellNum=50
 T=0.5
 TStr=format_using_decimal(T)
 dataRoot="./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/U_dist_dataFiles/"
@@ -92,7 +92,7 @@ def auto_corrForOneColumn(colVec):
     """
     same=False
     eps=1e-2
-    NLags=int(len(colVec)*1/10)
+    NLags=int(len(colVec)*3/4)
     print("NLags="+str(NLags))
     with warnings.catch_warnings():
         warnings.filterwarnings("error")
@@ -112,8 +112,8 @@ def auto_corrForOneColumn(colVec):
     return same,lagVal
 
 arr=arr2-arr1
-auto_corrForOneColumn(arr)
-
+same,lagVal=auto_corrForOneColumn(arr)
+print("lag="+str(lagVal))
 outCsvName="./show.csv"
 
 part=arr
@@ -147,7 +147,7 @@ plt.close()
 
 with open(inFileU,"rb") as fptr:
     UVec=np.array(pickle.load(fptr))
-UPart=UVec[:1000]
+UPart=UVec[-100:]
 UDiff=UPart[1:]-UPart[:-1]
 
 plt.figure()
@@ -156,3 +156,4 @@ plt.title("UAll")
 
 plt.savefig("UAll.png")
 plt.close()
+print(UPart)
