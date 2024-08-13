@@ -84,7 +84,7 @@ def auto_corrForOneColumn(colVec):
     :return:
     """
     same=False
-    eps=1e-2
+    eps=5e-2
     NLags=int(len(colVec)*1/10)
     # print("NLags="+str(NLags))
     with warnings.catch_warnings():
@@ -279,6 +279,7 @@ for j in range(0,N):
     xAjPathTmp=xAPathAll[j]
     print("checking xB"+str(j)+"-"+"xA"+str(j))
     sameTmp,lagTmp,pTmp,statTmp,numDataPoints,_,_=check_oneDistDataFilesForOneT(xAjPathTmp,xBjPathTmp,startingFileFraction,startingRowFraction)
+    print("lagTmp="+str(lagTmp))
     sameVec.append(sameTmp)
     lagVec.append(lagTmp)
     pVec.append(pTmp)
@@ -293,6 +294,7 @@ for j in range(0,N-1):
     xBjPathTmp=xBPathAll[j]
     print("checking xA"+str(j+1)+"-"+"xB"+str(j))
     sameTmp,lagTmp,pTmp,statTmp,numDataPoints,_,_=check_oneDistDataFilesForOneT(xBjPathTmp,xAjPlus1PathTmp,startingFileFraction,startingRowFraction)
+    print("lagTmp="+str(lagTmp))
     sameVec.append(sameTmp)
     lagVec.append(lagTmp)
     pVec.append(pTmp)
@@ -303,7 +305,7 @@ for j in range(0,N-1):
 
 summary_U_distFile=TDirRoot+"/summary_U_dist.txt"
 
-
+print(lagVec)
 if np.min(lagVec)<0:
     msg="high correlation"
     with open(summary_U_distFile,"w+") as fptr:
