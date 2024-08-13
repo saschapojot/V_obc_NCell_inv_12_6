@@ -12,13 +12,15 @@ def format_using_decimal(value):
 
 
 
-if (len(sys.argv)!=2):
+if (len(sys.argv)!=3):
     print("wrong number of arguments")
     exit()
 
 T=float(sys.argv[1])
 
-unitCellNum=10
+
+unitCellNum=int(sys.argv[2])
+
 
 TStr=format_using_decimal(T)
 #############################################
@@ -84,6 +86,7 @@ if stderr:
 
 #############################################
 #check statistics
+
 stats_process=subprocess.Popen(["python3","-u", "check_after_one_run.py", "./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/run_T"+TStr+".mc.conf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 while True:
     output = stats_process.stdout.readline()

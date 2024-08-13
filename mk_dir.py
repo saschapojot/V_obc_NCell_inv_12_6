@@ -10,7 +10,7 @@ TVals=[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6]
 rowNum=0
 inParamFileName="./V_inv_12_6Params.csv"
 
-unitCellNum=10
+unitCellNum=20
 
 inDf=pd.read_csv(inParamFileName)
 oneRow=inDf.iloc[rowNum,:]
@@ -77,11 +77,13 @@ def contents_to_conf(k):
         "\n",
         "effective_data_num_required=4000\n",
         "\n",
-        "loop_to_write=10000\n",
+        "loop_to_write=1000000\n",
         "\n",
         "#within each flush,  loop_to_write mc computations are executed\n",
         "\n",
-        "default_flush_num=10\n"
+        "default_flush_num=10\n",
+        "\n",
+        "h=0.01\n"
 
 
 

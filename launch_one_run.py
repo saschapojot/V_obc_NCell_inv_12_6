@@ -95,6 +95,7 @@ newFlushNum=jsonFromSummary["newFlushNum"]
 TDirRoot=jsonFromSummary["TDirRoot"]
 U_dist_dataDir=jsonFromSummary["U_dist_dataDir"]
 
+hStr=jsonDataFromConf["h"]
 params2cppInFile=[
     TStr+"\n",
     unitCellNum+"\n",
@@ -105,7 +106,8 @@ params2cppInFile=[
     newFlushNum+"\n",
     loopLastFile+"\n",
     TDirRoot+"\n",
-    U_dist_dataDir+"\n"
+    U_dist_dataDir+"\n",
+    hStr+"\n"
 
 
 ]

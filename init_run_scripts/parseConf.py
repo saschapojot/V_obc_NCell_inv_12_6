@@ -54,6 +54,7 @@ def parseConfContents(file):
     potFuncName=""
     coefsStr=""
     unitCellNumStr=""
+    hStr=""
     float_pattern = r'[-+]?(?:\d*\.\d+|\d+)(?:[eE][-+]?\d+)?'
     boolean_pattern = r'(true|false)'
 
@@ -150,6 +151,15 @@ def parseConfContents(file):
                 else:
                     print(fmtErrStr+oneLine)
                     exit(fmtCode)
+            #match h
+            if key=="h":
+                match_h=re.match(r'([-+]?(?:\d*\.\d+|\d+)(?:[eE][-+]?\d+)?)',value)
+                # print(value)
+                if match_h:
+                    hStr=match_h.group(1)
+                else:
+                    print(fmtErrStr+oneLine)
+                    exit(fmtCode)
         else:
             print("line: "+oneLine+" is discarded.")
             continue
@@ -185,6 +195,9 @@ def parseConfContents(file):
     if coefsStr=="":
         print("coefs not found in "+str(file))
         exit(valueMissingCode)
+    if hStr=="":
+        print("h not found in "+str(file))
+        exit(valueMissingCode)
 
 
     if obs_name=="":
@@ -198,7 +211,8 @@ def parseConfContents(file):
             "default_flush_num":default_flush_num,
             "coefs":coefsStr,
             "confFileName":file,
-            "unitCellNum":unitCellNumStr
+            "unitCellNum":unitCellNumStr,
+            "h":hStr
 
         }
         return dictTmp
@@ -214,7 +228,8 @@ def parseConfContents(file):
             "default_flush_num":default_flush_num,
             "coefs":coefsStr,
             "confFileName":file,
-            "unitCellNum":unitCellNumStr
+            "unitCellNum":unitCellNumStr,
+            "h":hStr
 
 
         }

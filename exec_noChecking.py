@@ -1,6 +1,6 @@
 import subprocess
 from decimal import Decimal
-
+import sys
 
 #this scrip executes mc without checking statistics
 def format_using_decimal(value):
@@ -10,9 +10,14 @@ def format_using_decimal(value):
     formatted_value = decimal_value.quantize(Decimal(1)) if decimal_value == decimal_value.to_integral() else decimal_value.normalize()
     return str(formatted_value)
 
-T=4
-unitCellNum=2
 
+if (len(sys.argv)!=3):
+    print("wrong number of arguments")
+    exit()
+
+T=float(sys.argv[1])
+
+unitCellNum=int(sys.argv[2])
 TStr=format_using_decimal(T)
 #############################################
 #launch mc, i.e., giving initial conditions

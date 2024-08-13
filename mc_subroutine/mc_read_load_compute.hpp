@@ -68,13 +68,15 @@ public:
                 this->beta = 1 / T;
 //                double stepForT1 = 0.1;
 
-                double h_threshhold=0.015;
 
-                this->h=h_threshhold;
+//                double h_threshhold=0.012;
+//
+//                this->h=h_threshhold;
+
 //                this->h = stepForT1 * T > h_threshhold ? h_threshhold : stepForT1 * T;//stepSize;
-                std::cout << "h=" << h << std::endl;
-                this->M = std::pow(2.0 * PI, 0.5) * h * 1.001;
-                std::cout<<"M="<<M<<std::endl;
+//                std::cout << "h=" << h << std::endl;
+//                this->M = std::pow(2.0 * PI, 0.5) * h * 1.001;
+//                std::cout<<"M="<<M<<std::endl;
                 paramCounter++;
                 continue;
             }//end reading T
@@ -173,6 +175,16 @@ public:
                 paramCounter++;
                 continue;
             }//end reading U_dist_dataDir
+
+            //read h
+            if(paramCounter==10){
+                iss>>h;
+                paramCounter++;
+                std::cout << "h=" << h << std::endl;
+//                this->M = std::pow(2.0 * PI, 0.5) * h * 1.001;
+//                std::cout<<"M="<<M<<std::endl;
+                continue;
+            }
 
 
 
