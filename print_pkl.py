@@ -4,7 +4,8 @@ import pandas as pd
 
 #this script prints part of an array
 
-inFile="./dataAllUnitCell10/row0/T2/U_dist_dataFiles/U/loopStart9100000loopEnd10099999.U.pkl"
+
+inFile="./dataAllUnitCell20/row0/T1/U_dist_dataFiles/U/loopStart9000000loopEnd9999999.U.pkl"
 N=10
 
 with open(inFile,"rb") as fptr:
@@ -14,7 +15,8 @@ with open(inFile,"rb") as fptr:
 
 outCsvName="./show.csv"
 
-part=arr[-20:]
+
+part=arr
 
 df=pd.DataFrame(part)
 
