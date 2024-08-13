@@ -18,7 +18,7 @@ if (len(sys.argv)!=2):
 
 T=float(sys.argv[1])
 
-unitCellNum=3
+unitCellNum=10
 
 TStr=format_using_decimal(T)
 #############################################
@@ -84,7 +84,7 @@ if stderr:
 
 #############################################
 #check statistics
-stats_process=subprocess.Popen(["python3", "check_after_one_run.py", "./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/run_T"+str(T)+".mc.conf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+stats_process=subprocess.Popen(["python3","-u", "check_after_one_run.py", "./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/run_T"+TStr+".mc.conf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 while True:
     output = stats_process.stdout.readline()
     if output == '' and stats_process.poll() is not None:
