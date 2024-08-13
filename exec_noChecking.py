@@ -22,7 +22,7 @@ TStr=format_using_decimal(T)
 #############################################
 #launch mc, i.e., giving initial conditions
 
-launchResult=subprocess.run(["python3", "launch_one_run.py", "./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/run_T"+str(T)+".mc.conf"])
+launchResult=subprocess.run(["python3", "launch_one_run.py", "./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/run_T"+TStr+".mc.conf"])
 print(launchResult.stdout)
 if launchResult.returncode!=0:
     print("error in launch one run: "+str(launchResult.returncode))
@@ -46,8 +46,18 @@ if stdout:
 if stderr:
     print(stderr.strip())
 
-
-
+make_process=subprocess.Popen(["make",targetName], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+while True:
+    output = make_process.stdout.readline()
+    if output == '' and make_process.poll() is not None:
+        break
+    if output:
+        print(output.strip())
+stdout, stderr = make_process.communicate()
+if stdout:
+    print(stdout.strip())
+if stderr:
+    print(stderr.strip())
 #############################################
 
 #############################################
