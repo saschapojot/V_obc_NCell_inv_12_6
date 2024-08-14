@@ -1,7 +1,8 @@
 
 
 
-
+#when checking equilibrium, if lag is large, it may be because the equilibrium is far
+#or, the data are around equilibrium, but h is too small
 
 ###stats
 
