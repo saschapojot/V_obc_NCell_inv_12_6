@@ -31,7 +31,7 @@ def format_using_decimal(value):
     formatted_value = decimal_value.quantize(Decimal(1)) if decimal_value == decimal_value.to_integral() else decimal_value.normalize()
     return str(formatted_value)
 TVals=[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,6]
-unitCellNum=50
+unitCellNum=80
 dataRoot="./dataAllUnitCell"+str(unitCellNum)+"/row"+str(rowNum)+"/"
 
 TDirsAll=[]
@@ -89,7 +89,7 @@ def contents_to_conf(k):
         "\n",
         "default_flush_num=10\n",
         "\n",
-        "h=0.0025\n"
+        "h=2.5e-3\n"
 
 
 

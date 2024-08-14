@@ -43,8 +43,8 @@ def sort_data_files_by_lpEnd(oneDataFolder):
     return sortedDataFiles
 
 
-cellInd=0
-unitCellNum=50
+cellInd=26
+unitCellNum=80
 T=0.5
 TStr=format_using_decimal(T)
 dataRoot="./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/U_dist_dataFiles/"
@@ -60,7 +60,7 @@ sorted_inUFiles=sort_data_files_by_lpEnd(inUPath)
 sorted_in_xAFiles=sort_data_files_by_lpEnd(in_xAPath)
 sorted_in_xBFiles=sort_data_files_by_lpEnd(in_xBPath)
 
-fileInd=0
+fileInd=-2
 inFile1=sorted_in_xAFiles[fileInd]
 inFile2=sorted_in_xBFiles[fileInd]
 inFileU=sorted_inUFiles[fileInd]
@@ -113,7 +113,7 @@ def auto_corrForOneColumn(colVec):
 
 arr=arr2-arr1
 same,lagVal=auto_corrForOneColumn(arr)
-print("lag="+str(lagVal))
+# print("lag="+str(lagVal))
 outCsvName="./show.csv"
 
 part=arr
@@ -144,10 +144,14 @@ plt.savefig("V1Inc.png")
 plt.close()
 
 
-
+print(inFileU)
 with open(inFileU,"rb") as fptr:
     UVec=np.array(pickle.load(fptr))
-UPart=UVec[-100:]
+
+ULength=int(1e6)
+UPart=UVec[-ULength:]
+sameU,lagU=auto_corrForOneColumn(UPart)
+print("lagU="+str(lagU))
 UDiff=UPart[1:]-UPart[:-1]
 
 plt.figure()

@@ -391,33 +391,68 @@ for i,(x,y) in enumerate(zip(xANames,xBNames)):
     xNames.append(x)
     xNames.append(y)
 xNames.extend(xANames[len(xBNames):])
-fig,axes=plt.subplots(len(sortedTVals),1,figsize=(30,10))
-for n in  range(0,len(sortedTVals)):
-    positionOneTemp=positions[n,:]
-    for i , pos in enumerate(positionOneTemp):
-        color='red' if i % 2 == 0 else 'blue'
-        axes[n].plot(pos,0,"o",color=color)
-    axes[n].set_xticks(positionOneTemp)
-    axes[n].set_xticklabels(xNames)
-    # Hide the y-axis
-    axes[n].get_yaxis().set_visible(False)
-    # Draw a horizontal line representing the axis
-    axes[n].axhline(0, color='black', linewidth=0.5)
+# print(len(sortedTVals))
+# fig,axes=plt.subplots(len(sortedTVals),1,figsize=(30,10))
+# for n in  range(0,len(sortedTVals)):
+#     positionOneTemp=positions[n,:]
+#     for i , pos in enumerate(positionOneTemp):
+#         color='red' if i % 2 == 0 else 'blue'
+#         axes[n].plot(pos,0,"o",color=color)
+#     axes[n].set_xticks(positionOneTemp)
+#     axes[n].set_xticklabels(xNames)
+#     # Hide the y-axis
+#     axes[n].get_yaxis().set_visible(False)
+#     # Draw a horizontal line representing the axis
+#     axes[n].axhline(0, color='black', linewidth=0.5)
+#
+#     d1d2InterTmp=d1d2InterleavedArray[n,:]
+#     textPos=[]
+#     for j in range(0,len(positionOneTemp)-1):
+#         posTmp=(positionOneTemp[j+1]-positionOneTemp[j])/2+positionOneTemp[j]
+#         textPos.append(posTmp)
+#
+#     for j,val in enumerate(textPos):
+#         axes[n].text(val+0.1,-0.01,np.round(d1d2InterTmp[j+1],2),ha='center', va='bottom', fontsize=12)
+#
+#     axes[n].set_title("T="+str(sortedTVals[n]))
+#
+#
+# plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+# fig.suptitle('OBC, average distances')
+# plt.savefig(csvDataFolderRoot+"/lattice.png")
 
-    d1d2InterTmp=d1d2InterleavedArray[n,:]
-    textPos=[]
-    for j in range(0,len(positionOneTemp)-1):
-        posTmp=(positionOneTemp[j+1]-positionOneTemp[j])/2+positionOneTemp[j]
-        textPos.append(posTmp)
+def plot_positions(ax, positions, x_names, d1d2_interleaved_array, title):
+    # Plot positions with alternating colors
+    for i, pos in enumerate(positions):
+        color = 'red' if i % 2 == 0 else 'blue'
+        ax.plot(pos, 0, "o", color=color)
 
-    for j,val in enumerate(textPos):
-        axes[n].text(val+0.1,-0.01,np.round(d1d2InterTmp[j+1],2),ha='center', va='bottom', fontsize=12)
+    # Set x-ticks and labels
+    ax.set_xticks(positions)
+    ax.set_xticklabels(x_names)
 
-    axes[n].set_title("T="+str(sortedTVals[n]))
+    # Hide the y-axis and draw a horizontal line
+    ax.get_yaxis().set_visible(False)
+    ax.axhline(0, color='black', linewidth=0.5)
 
+    # Calculate and annotate text positions
+    text_positions = [(positions[j+1] + positions[j]) / 2 for j in range(len(positions) - 1)]
+    for j, val in enumerate(text_positions):
+        ax.text(val + 0.1, -0.01, np.round(d1d2_interleaved_array[j+1], 2),
+                ha='center', va='bottom', fontsize=12)
+
+    # Set the subplot title
+    ax.set_title(title)
+width=100
+if len(sortedTVals) == 1:
+    fig, ax = plt.subplots(figsize=(width, 10))
+    plot_positions(ax, positions[0, :], xNames, d1d2InterleavedArray[0, :], f"T={sortedTVals[0]}")
+else:
+    fig, axes = plt.subplots(len(sortedTVals), 1, figsize=(width, 10))
+    for n in range(len(sortedTVals)):
+        plot_positions(axes[n], positions[n, :], xNames, d1d2InterleavedArray[n, :], f"T={sortedTVals[n]}")
 
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 fig.suptitle('OBC, average distances')
-plt.savefig(csvDataFolderRoot+"/lattice.png")
-
+plt.savefig(csvDataFolderRoot + "/lattice.png")
 #######################################################
