@@ -7,8 +7,15 @@ import matplotlib.pyplot as plt
 import glob
 import re
 from decimal import Decimal
+import sys
 #this script prints part of an array
 
+
+
+
+if (len(sys.argv)!=3):
+    print("wrong number of arguments")
+    exit()
 
 
 def format_using_decimal(value):
@@ -44,14 +51,15 @@ def sort_data_files_by_lpEnd(oneDataFolder):
 
 
 cellInd=26
-unitCellNum=80
-T=0.5
+T=float(sys.argv[1])
+unitCellNum=int(sys.argv[2])
+
 TStr=format_using_decimal(T)
 dataRoot="./dataAllUnitCell"+str(unitCellNum)+"/row0/T"+TStr+"/U_dist_dataFiles/"
 
 print(dataRoot)
 in_xAPath=dataRoot+"/xA"+str(cellInd)+"/"
-
+# print(in_xAPath)
 in_xBPath=dataRoot+"/xB"+str(cellInd)+"/"
 
 inUPath=dataRoot+"/U/"
@@ -59,8 +67,8 @@ inUPath=dataRoot+"/U/"
 sorted_inUFiles=sort_data_files_by_lpEnd(inUPath)
 sorted_in_xAFiles=sort_data_files_by_lpEnd(in_xAPath)
 sorted_in_xBFiles=sort_data_files_by_lpEnd(in_xBPath)
-
-fileInd=-2
+# print(sorted_in_xAFiles)
+fileInd=-1
 inFile1=sorted_in_xAFiles[fileInd]
 inFile2=sorted_in_xBFiles[fileInd]
 inFileU=sorted_inUFiles[fileInd]

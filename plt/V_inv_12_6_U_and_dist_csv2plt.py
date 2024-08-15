@@ -443,7 +443,7 @@ def plot_positions(ax, positions, x_names, d1d2_interleaved_array, title):
 
     # Set the subplot title
     ax.set_title(title)
-width=100
+width=40
 if len(sortedTVals) == 1:
     fig, ax = plt.subplots(figsize=(width, 10))
     plot_positions(ax, positions[0, :], xNames, d1d2InterleavedArray[0, :], f"T={sortedTVals[0]}")

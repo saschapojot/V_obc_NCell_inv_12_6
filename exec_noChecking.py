@@ -77,3 +77,4 @@ if stderr:
     print(stderr.strip())
 
 #############################################
+print("T="+TStr)

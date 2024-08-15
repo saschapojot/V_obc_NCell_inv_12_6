@@ -10,7 +10,7 @@ import scipy.stats as stats
 import os
 from decimal import Decimal
 
-#This script fits the values of U for different N, same T
+#This script computes statistics of  values of U for different N, same T
 
 def format_using_decimal(value):
     # Convert the float to a Decimal using string conversion to avoid precision issues
