@@ -60,7 +60,7 @@ for j in range(0,len(sorted_fitU_jsonFileVec)):
     fileName=sorted_fitU_jsonFileVec[j]
     N_inv0,U0Pred,N_invUnique,U_pred,_,_=createDataFromOneFile(fileName)
     intercept=float(U0Pred)
-    plt.text(0, intercept, f'{intercept:.2f}', color='blue', verticalalignment='center', horizontalalignment='right')
+    # plt.text(0, intercept, f'{intercept:.2f}', color='blue', verticalalignment='center', horizontalalignment='right')
     plt.plot(N_invUnique,U_pred,label="T="+TStr+", intercept="+str(np.round(intercept,2)),marker=".",markersize=3,linewidth=0.8,linestyle="--")
 
 plt.xlabel(r"$\frac{1}{N}$")
@@ -76,7 +76,7 @@ for j in range(0,len(sorted_fitU_jsonFileVec)):
     fileName=sorted_fitU_jsonFileVec[j]
     N_inv0,_,N_invUnique,_,L0Pred,L_pred=createDataFromOneFile(fileName)
     intercept=L0Pred
-    plt.text(0, intercept, f'{intercept:.2f}', color='blue', verticalalignment='center', horizontalalignment='right')
+    # plt.text(0, intercept, f'{intercept:.2f}', color='blue', verticalalignment='center', horizontalalignment='right')
     plt.plot(N_invUnique,L_pred,label="T="+TStr+", intercept="+str(np.round(intercept,2)),marker=".",markersize=3,linewidth=0.8,linestyle="-.")
 
 

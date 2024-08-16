@@ -12,8 +12,8 @@ python pkl2csv.py T N
 ###stats
 
 1. python oneStat_U_L.py T
-2. python combinedStats.py
-3. python stats2_plt.py
+2. python combinedStats.py T
+3. python stats2_plt.py T
 
 ###fit
 1. python fit_U_L.py T  #for all T

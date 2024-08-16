@@ -67,7 +67,7 @@ def matchOneLine(line):
         else:
             print("mismatch in "+str(line))
 statsFolder="./statsAll/"
-statsAllFile=statsFolder+ "/statsAll.txt"
+statsAllFile=statsFolder+ "/statsAllT"+TStr+".txt"
 contents=removeCommentsAndEmptyLines(statsAllFile)
 
 NVec=[]
