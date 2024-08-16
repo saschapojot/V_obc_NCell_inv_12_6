@@ -34,7 +34,10 @@ def format_using_decimal(value):
     return str(formatted_value)
 
 
-T=0.5
+if (len(sys.argv)!=2):
+    print("wrong number of arguments")
+    exit()
+T=float(sys.argv[1])
 
 TStr=format_using_decimal(T)
 
@@ -67,7 +70,7 @@ for j in range(0,len(sortedDataFolderVec)):
 
 outStatsFolder="./statsAll/"
 Path(outStatsFolder).mkdir(parents=True, exist_ok=True)
-outStatsFile=outStatsFolder+"/statsAll.txt"
+outStatsFile=outStatsFolder+"/statsAllT"+TStr+".txt"
 contentsAll=[]
 for file in sorted_statsFilesVec:
     contentsTmp=removeCommentsAndEmptyLines(file)[0]+"\n"

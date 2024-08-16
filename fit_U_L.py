@@ -99,25 +99,30 @@ N_invToFitWithAConst=sm.add_constant(N_invToFit)
 modelU=sm.OLS(UToFit,N_invToFitWithAConst)
 resultsU = modelU.fit()
 
+modelL=sm.OLS(LToFit,N_invToFitWithAConst)
+resultsL=modelL.fit()
+
 # Print the detailed summary
 print(resultsU.summary())
+print(resultsL.summary())
 
 N_invUnique=np.unique(N_invToFit)
 N_invUniqueWithConst=sm.add_constant(N_invUnique)
 
 U_pred=resultsU.predict(N_invUniqueWithConst)
-
+L_pred=resultsL.predict(N_invUniqueWithConst)
 
 N_inv0=[0]
 N_inv0WithConst=sm.add_constant(N_inv0)
 U0Pred=resultsU.predict(N_inv0WithConst)
+L0Pred=resultsL.predict(N_inv0WithConst)
 # print(U0Pred)
 
 statsFolder="./statsAll/"
 plt.figure()
 plt.xlim(left=0,right=0.55)
 
-plt.plot(N_invUnique,U_pred,color="red",label="linear fit",marker='o',markersize=3)
+plt.plot(N_invUnique,U_pred,color="red",label="linear fit",marker='o',markersize=2,linewidth=0.7,linestyle="-.")
 plt.scatter(N_inv0,U0Pred,color="blue",marker="D",s=30,label="Intercept")
 intercept=U0Pred[0]
 plt.text(0, intercept, f'{intercept:.2f}', color='blue', verticalalignment='center', horizontalalignment='right')
@@ -125,5 +130,35 @@ plt.xlabel(r"$\frac{1}{N}$")
 plt.legend(loc="best")
 plt.ylabel(r"E(U)/N")
 plt.title("E(U) per unit cell, T="+TStr)
-plt.savefig(statsFolder+"/fit_U.png")
+plt.savefig(statsFolder+"/fit_UT"+TStr+".png")
 plt.close()
+
+
+plt.figure()
+plt.plot(N_invUnique,L_pred,color="black",label="linear fit",marker='.',markersize=5,linewidth=0.7,linestyle="-.")
+plt.scatter(N_inv0,L0Pred,color="magenta",marker="D",s=10,label="Intercept")
+plt.xlabel(r"$\frac{1}{N}$")
+intercept=L0Pred[0]
+plt.text(0, intercept, f'{intercept:.2f}', color='blue', verticalalignment='center', horizontalalignment='right')
+
+plt.legend(loc="best")
+plt.ylabel(r"E(L)/N")
+plt.xlim(left=0,right=0.55)
+plt.title("E(L) per unit cell, T="+TStr)
+plt.savefig(statsFolder+"/fit_LT"+TStr+".png")
+plt.close()
+
+
+outJsonData={
+    "N_inv0":str(N_inv0[0]),
+    "U0Pred":str(U0Pred[0]),
+    "N_invUnique":list(N_invUnique),
+    "U_pred":list(U_pred),
+    "L0Pred":str(L0Pred[0]),
+    "L_pred":list(L_pred)
+}
+
+outJsonFile=statsFolder+"/fitU_T"+TStr+".json"
+
+with open(outJsonFile,"w+") as fptr:
+    json.dump(outJsonData,fptr,indent=4)
